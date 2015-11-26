@@ -12,14 +12,29 @@ public class TitleScreen extends BaseScreen {
 	}
 
 	@Override
-	public void render(float delta) {//TODO
-
+	public void render(float delta) {// TODO
 		super.render(delta);
 		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		getBatch().begin();
-		getBatch().draw(getGame().getImg(), getGame().getWidth() / 2, 0);
-		FontService.ubuntuMedium.getFont(20).draw(getGame().getBatch(), "Hello World", 100, 100);
+		FontService.ubuntuMedium.getFont(40).draw(getGame().getBatch(), "Press a key to start", getWidth() / 2, getHeight() / 2);
 		getBatch().end();
+	}
+
+	@Override
+	public void show() {
+		Gdx.input.setInputProcessor(this);
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		getGame().setScreen(getGame().getHomeScreen());
+		return true;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		getGame().setScreen(getGame().getHomeScreen());
+		return true;
 	}
 }
