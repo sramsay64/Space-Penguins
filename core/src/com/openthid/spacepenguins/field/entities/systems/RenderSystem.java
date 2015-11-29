@@ -7,10 +7,11 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.openthid.spacepenguins.field.entities.components.PositionComponent;
 import com.openthid.spacepenguins.field.entities.components.RenderedComponent;
-import com.openthid.spacepenguins.field.entities.components.SpriteComponent;
+import com.openthid.spacepenguins.field.entities.components.TextureComponent;
 
 public class RenderSystem extends EntitySystem {
 
@@ -18,18 +19,23 @@ public class RenderSystem extends EntitySystem {
 	//	private ComponentMapper<SpriteComponent> sm = ComponentMapper.getFor(SpriteComponent.class);
 
 	private ImmutableArray<Entity> entities;
-	private ViewPort viewPort;
+	private float worldPosX = 0;
+	private float worldPosY = 0;
+	private float zoom = 1;
+	private int screenX;
+	private int screenY;
 
 	private Batch batch;
 
-	public RenderSystem(Batch batch, ViewPort viewPort) {
+	public RenderSystem(Batch batch, int screenX, int screenY) {
 		this.batch = batch;
-		this.setViewPort(viewPort);
+		this.screenX = screenX;
+		this.screenY = screenY;
 	}
 
 	@Override
 	public void addedToEngine(Engine engine) {
-		entities = engine.getEntitiesFor(Family.all(RenderedComponent.class, PositionComponent.class, SpriteComponent.class).get());
+		entities = engine.getEntitiesFor(Family.all(RenderedComponent.class, PositionComponent.class, TextureComponent.class).get());
 	}
 
 	@Override
@@ -40,46 +46,27 @@ public class RenderSystem extends EntitySystem {
 		for (int i = 0; i < entities.size(); i++) {
 			Entity entity = entities.get(i);
 			PositionComponent pos = entity.getComponent(PositionComponent.class);
-			batch.draw(entity.getComponent(SpriteComponent.class).sprite.getTexture(), pos.x, pos.y);
+			Texture texture = entity.getComponent(TextureComponent.class).texture;
+			batch.draw(texture, projectX(pos.x), projectY(pos.y), texture.getWidth()*zoom, texture.getHeight()*zoom);
 		}
 		batch.end();
 	}
 
-	public ViewPort getViewPort() {
-		return viewPort;
+	public void zoom(float diff) {
+		zoom = zoom*diff;
 	}
 
-	public void setViewPort(ViewPort viewPort) {
-		this.viewPort = viewPort;
+	public void move(int dx, int dy) {
+		worldPosX += dx/zoom;
+		worldPosY += dy/zoom;
+		Gdx.app.log("TEMP", worldPosX + " | " + worldPosY + " | " + projectX(10) + " | " + projectY(10));
 	}
 
-	public static class ViewPort {
-		private int xSize;
-		private int ySize;
-		private int xOffset;
-		private int yOffset;
+	public float projectX(float x) {
+		return (x-worldPosX)*zoom + screenX/2;
+	}
 
-		public ViewPort(int xSize, int ySize, float scale, int xPixels, int yPixels) {
-			this.xSize = xSize;
-			this.ySize = ySize;
-			this.xOffset = xOffset;
-			this.yOffset = yOffset;
-		}
-
-		public int getxSize() {
-			return xSize;
-		}
-
-		public int getySize() {
-			return ySize;
-		}
-
-		public int getxOffset() {
-			return xOffset;
-		}
-
-		public int getyOffset() {
-			return yOffset;
-		}
+	public float projectY(float y) {
+		return (y-worldPosY)*zoom + screenY/2;
 	}
 }
