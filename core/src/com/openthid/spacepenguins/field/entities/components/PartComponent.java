@@ -1,40 +1,41 @@
 package com.openthid.spacepenguins.field.entities.components;
 
+import java.util.HashMap;
+
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.graphics.Texture;
 
 public class PartComponent implements Component {
+	public static void x() {
+		for (int i = 0; i < PartType.values().length; i++) {
+			for (int j = 0; j < PartShape.values().length; j++) {
+				System.out.println(new PartComponent(PartType.values()[i], PartShape.values()[j], MaterialType.GLASS).getPartFilename());
+			}
+		}
+	}
+
+	public PartComponent(PartType partType, PartShape partShape, MaterialType materialType) {
+		this.partType = partType;
+		this.partShape = partShape;
+		this.materialType = materialType;
+	}
+
+	private static HashMap<String, Texture> textureCache = new HashMap<>(275);
 
 	public PartType partType;
 	public PartShape partShape;
 	public MaterialType materialType;
 
 	public String getPartFilename() {
-		String x = null;
-		switch (partShape) {
-		case CIRCLE:
-			break;
-		case DOUBLETRIANGLE:
-			break;
-		case SQUARE1x1:
-			break;
-		case SQUARE1x2:
-			break;
-		case SQUARE1x3:
-			break;
-		case SQUARE2x1:
-			break;
-		case SQUARE2x2:
-			break;
-		case SQUARE2x3:
-			break;
-		case SQUARE3x1:
-			break;
-		case SQUARE3x2:
-			break;
-		case TRIANGLE:
-			break;
+		return materialType.getFilename() + partShape.toString() + "-" + partType.toString();// + ".png";
+	}
+
+	public Texture getTexture() {
+		String key = getPartFilename();
+		if (textureCache.containsKey(key)) {
+			textureCache.put(key, new Texture(key));
 		}
-		return materialType.getFilename() + x + ".png";
+		return textureCache.get(key);
 	}
 
 	public static enum PartType {
@@ -104,11 +105,11 @@ public class PartComponent implements Component {
 	}
 
 	public static enum MaterialType {
-		WOOD ( 100,  200,  50,  50, 0, "kenney_physics/Wood elements/elementWood"),
-		STONE(6000,  500, 900, 900, 10, "kenney_physics/Stone elements/elementStone"),
-		METAL(3000, 2000, 100, 100, 0, "kenney_physics/Metal elements/elementMetal"),
-		GLASS(9000,   50,  10,  10, 0, "kenney_physics/Glass elements/elementGlass"),
-		FUEL ( 150,  100, 100, 100, 100, "kenney_physics/Explosive elements/elementExplosive");
+		WOOD ( 100,  200,  50,  50, 0, "kenney/Wood-elements/"),
+		STONE(6000,  500, 900, 900, 10, "kenney/Stone-elements/"),
+		METAL(3000, 2000, 100, 100, 0, "kenney/Metal-elements/"),
+		GLASS(9000,   50,  10,  10, 0, "kenney/Glass-elements/"),
+		FUEL ( 150,  100, 100, 100, 100, "kenney/Explosive-elements/");
 
 		private int heatTolerance;
 		private int impactTolerance;

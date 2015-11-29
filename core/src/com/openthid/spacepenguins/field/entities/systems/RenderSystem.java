@@ -59,7 +59,6 @@ public class RenderSystem extends EntitySystem {
 	public void move(int dx, int dy) {
 		worldPosX += dx/zoom;
 		worldPosY += dy/zoom;
-		Gdx.app.log("TEMP", worldPosX + " | " + worldPosY + " | " + projectX(10) + " | " + projectY(10));
 	}
 
 	public float projectX(float x) {
