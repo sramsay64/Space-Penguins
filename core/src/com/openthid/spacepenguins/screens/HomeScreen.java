@@ -24,7 +24,6 @@ public class HomeScreen extends BaseScreen {
 	public HomeScreen(GdxGame game) {
 		super(game);
 		btnStart = new VisTextButton("Start", makeChangeListener((ChangeEvent e, Actor a) -> {
-			Gdx.app.log("TODO", "Game Screen");
 			FieldScreen screen = new FieldScreen(getGame());
 			getGame().setScreen(screen);
 		}));

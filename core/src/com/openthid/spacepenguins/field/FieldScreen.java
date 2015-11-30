@@ -8,9 +8,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.openthid.spacepenguins.GdxGame;
+import com.openthid.spacepenguins.field.entities.Part;
+import com.openthid.spacepenguins.field.entities.Part.MaterialType;
+import com.openthid.spacepenguins.field.entities.Part.PartShape;
+import com.openthid.spacepenguins.field.entities.Part.PartType;
+import com.openthid.spacepenguins.field.entities.components.MassComponent;
+import com.openthid.spacepenguins.field.entities.components.OrbitComponent;
+import com.openthid.spacepenguins.field.entities.components.PartComponent;
 import com.openthid.spacepenguins.field.entities.components.PositionComponent;
 import com.openthid.spacepenguins.field.entities.components.RenderedComponent;
 import com.openthid.spacepenguins.field.entities.components.TextureComponent;
+import com.openthid.spacepenguins.field.entities.systems.OrbitSystem;
 import com.openthid.spacepenguins.field.entities.systems.RenderSystem;
 import com.openthid.spacepenguins.screens.BaseScreen;
 
@@ -24,6 +32,7 @@ public class FieldScreen extends BaseScreen {
 	private Engine engine;
 
 	private RenderSystem renderSystem;
+	private OrbitSystem orbitSystem;
 
 	public FieldScreen(GdxGame game) {
 		super(game);
@@ -32,12 +41,27 @@ public class FieldScreen extends BaseScreen {
 		
 		renderSystem = new RenderSystem(getBatch(), getWidth(), getHeight());
 		engine.addSystem(renderSystem);
+		
+		orbitSystem = new OrbitSystem();
+		engine.addSystem(orbitSystem);
 
 		Entity entity = new Entity()
 				.add(new RenderedComponent())
 				.add(new PositionComponent(0, 0))
+				.add(new MassComponent(7.6E8f))
 				.add(new TextureComponent(new Texture("Colorful_planets_1/spr_planet01.png")));
 		engine.addEntity(entity);
+		
+		PartComponent partComponent = new PartComponent(new Part(PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD));
+		OrbitComponent orbitComponent = new OrbitComponent(8, 1, 1);
+		Entity testShip = new Entity()
+				.add(new RenderedComponent())
+				.add(new PositionComponent(0, 1000))
+				.add(orbitComponent)
+				.add(orbitComponent.massComponent)
+				.add(partComponent.textureComponent)
+				.add(partComponent);
+		engine.addEntity(testShip);
 	}
 
 	@Override
@@ -58,12 +82,6 @@ public class FieldScreen extends BaseScreen {
 			renderSystem.move(0, -1);
 		}
 		getEngine().update(delta);
-//		super.render(delta);
-//		Gdx.gl.glClearColor(1, 0, 0, 1);
-//		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//		getGame().getBatch().begin();
-//		getGame().getBatch().draw(getGame().getImg(), getGame().getWidth() / 2, 0);
-//		getGame().getBatch().end();
 	}
 
 	public Engine getEngine() {

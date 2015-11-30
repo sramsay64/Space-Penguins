@@ -21,7 +21,6 @@ public class GdxGame extends Game {
 	public GdxGame(int width, int height) {
 		this.height = height;
 		this.width = width;
-		PartComponent.x();
 	}
 
 	public void create() {

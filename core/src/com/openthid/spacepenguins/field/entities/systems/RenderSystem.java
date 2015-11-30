@@ -47,7 +47,7 @@ public class RenderSystem extends EntitySystem {
 			Entity entity = entities.get(i);
 			PositionComponent pos = entity.getComponent(PositionComponent.class);
 			Texture texture = entity.getComponent(TextureComponent.class).texture;
-			batch.draw(texture, projectX(pos.x), projectY(pos.y), texture.getWidth()*zoom, texture.getHeight()*zoom);
+			batch.draw(texture, projectX(pos.x) - texture.getWidth()*zoom/2, projectY(pos.y) - texture.getHeight()*zoom/2, texture.getWidth()*zoom, texture.getHeight()*zoom);
 		}
 		batch.end();
 	}
