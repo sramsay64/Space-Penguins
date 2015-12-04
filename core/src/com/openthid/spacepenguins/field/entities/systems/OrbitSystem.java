@@ -58,7 +58,6 @@ public class OrbitSystem extends EntitySystem {
 			float r2 = (dx*dx + dy*dy);
 			float acc = (gravitationalConstant*massComponent.mass/((float) Math.pow(r2, 1.5)));
 			sum.add(acc*dx, acc*dy);
-			System.out.println(sum);
 		}
 		return sum;
 	}

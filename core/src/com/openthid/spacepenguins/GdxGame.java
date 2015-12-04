@@ -4,7 +4,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.kotcrab.vis.ui.VisUI;
-import com.openthid.spacepenguins.field.entities.components.PartComponent;
 import com.openthid.spacepenguins.screens.HomeScreen;
 import com.openthid.spacepenguins.screens.TitleScreen;
 

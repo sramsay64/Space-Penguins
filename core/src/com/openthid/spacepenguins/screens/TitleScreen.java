@@ -12,7 +12,7 @@ public class TitleScreen extends BaseScreen {
 	}
 
 	@Override
-	public void render(float delta) {// TODO
+	public void render(float delta) {//LATER Make nicer
 		super.render(delta);
 		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

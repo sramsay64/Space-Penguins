@@ -8,16 +8,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.openthid.spacepenguins.GdxGame;
-import com.openthid.spacepenguins.field.entities.Part;
-import com.openthid.spacepenguins.field.entities.Part.MaterialType;
-import com.openthid.spacepenguins.field.entities.Part.PartShape;
-import com.openthid.spacepenguins.field.entities.Part.PartType;
 import com.openthid.spacepenguins.field.entities.components.MassComponent;
 import com.openthid.spacepenguins.field.entities.components.OrbitComponent;
-import com.openthid.spacepenguins.field.entities.components.PartComponent;
 import com.openthid.spacepenguins.field.entities.components.PositionComponent;
 import com.openthid.spacepenguins.field.entities.components.RenderedComponent;
 import com.openthid.spacepenguins.field.entities.components.TextureComponent;
+import com.openthid.spacepenguins.field.entities.ship.Part;
+import com.openthid.spacepenguins.field.entities.ship.Part.MaterialType;
+import com.openthid.spacepenguins.field.entities.ship.Part.PartRotation;
+import com.openthid.spacepenguins.field.entities.ship.Part.PartShape;
+import com.openthid.spacepenguins.field.entities.ship.Part.PartType;
+import com.openthid.spacepenguins.field.entities.ship.RootPart;
+import com.openthid.spacepenguins.field.entities.ship.Ship;
+import com.openthid.spacepenguins.field.entities.ship.ShipGraphBuilder;
 import com.openthid.spacepenguins.field.entities.systems.OrbitSystem;
 import com.openthid.spacepenguins.field.entities.systems.RenderSystem;
 import com.openthid.spacepenguins.screens.BaseScreen;
@@ -52,15 +55,21 @@ public class FieldScreen extends BaseScreen {
 				.add(new TextureComponent(new Texture("Colorful_planets_1/spr_planet01.png")));
 		engine.addEntity(entity);
 		
-		PartComponent partComponent = new PartComponent(new Part(PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD));
-		OrbitComponent orbitComponent = new OrbitComponent(8, 1, 1);
+		Ship ship = new Ship(new RootPart(), new OrbitComponent(0.8f, 0.1f, 1), new PositionComponent(0, 100));
+		ShipGraphBuilder builder = new ShipGraphBuilder();
+		builder
+			.add( 1,  0, new Part(PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD))
+			.add(-1,  0, new Part(PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD, PartRotation.QUARTER))
+			.add( 0,  1, new Part(PartType.SOLID, PartShape.CIRCLE, MaterialType.FUEL))
+			.setupOn(ship.getRootPart());
+		
 		Entity testShip = new Entity()
 				.add(new RenderedComponent())
-				.add(new PositionComponent(0, 1000))
-				.add(orbitComponent)
-				.add(orbitComponent.massComponent)
-				.add(partComponent.textureComponent)
-				.add(partComponent);
+				.add(ship.getPositionComponent())
+				.add(ship.getShipComponent())
+				.add(ship.getShipComponent().selfRenderedComponent)
+//				.add(ship.getOrbitComponent())
+				.add(ship.getMassComponent());
 		engine.addEntity(testShip);
 	}
 
