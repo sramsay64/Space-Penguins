@@ -20,13 +20,17 @@ import com.openthid.util.TriConsumer;
 
 public class RenderSystem extends EntitySystem {
 
-	//	private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
+	//	private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class); //TODO
 	//	private ComponentMapper<SpriteComponent> sm = ComponentMapper.getFor(SpriteComponent.class);
 
 	private ImmutableArray<Entity> renderedEntities;
 	private ImmutableArray<Entity> selfRenderedEntities;
 	private float worldPosX = 0;
 	private float worldPosY = 0;
+	private float linZoom = 0;
+	/**
+	 * A Cache of <pre>Math.exp(linZoom)</pre>
+	 */
 	private float zoom = 1;
 	private int screenX;
 	private int screenY;
@@ -55,10 +59,10 @@ public class RenderSystem extends EntitySystem {
 			PositionComponent pos = entity.getComponent(PositionComponent.class);
 			Texture texture = entity.getComponent(TextureComponent.class).texture;
 			batch.draw(texture,
-					projectX(pos.x) - texture.getWidth()*zoom/2,
-					projectY(pos.y) - texture.getHeight()*zoom/2,
-					texture.getWidth()*zoom,
-					texture.getHeight()*zoom
+					projectX(pos.x) - texture.getWidth()*getZoom()/2,
+					projectY(pos.y) - texture.getHeight()*getZoom()/2,
+					texture.getWidth()*getZoom(),
+					texture.getHeight()*getZoom()
 				);
 		}
 		for (int i = 0; i < selfRenderedEntities.size(); i++) {
@@ -94,12 +98,12 @@ public class RenderSystem extends EntitySystem {
 //						);
 //				} else
 				batch.draw(texture,
-						projectX(floats.items[0] + vec.x*MathUtils.cosDeg(rotationB) - vec.y*MathUtils.sinDeg(rotationB)) - floats.items[2]*zoom/2,
-						projectY(floats.items[1] + vec.y*MathUtils.cosDeg(rotationB) + vec.x*MathUtils.sinDeg(rotationB)) - floats.items[3]*zoom/2,
-						(floats.items[2]/2)*zoom,
-						(floats.items[3]/2)*zoom,
-						floats.items[2]*zoom,
-						floats.items[3]*zoom,
+						projectX(floats.items[0] + vec.x*MathUtils.cosDeg(rotationB) - vec.y*MathUtils.sinDeg(rotationB)) - floats.items[2]*getZoom()/2,
+						projectY(floats.items[1] + vec.y*MathUtils.cosDeg(rotationB) + vec.x*MathUtils.sinDeg(rotationB)) - floats.items[3]*getZoom()/2,
+						(floats.items[2]/2)*getZoom(),
+						(floats.items[3]/2)*getZoom(),
+						floats.items[2]*getZoom(),
+						floats.items[3]*getZoom(),
 						1,1, //No scaling
 						rotationA + rotationB,
 						0,0,
@@ -113,20 +117,29 @@ public class RenderSystem extends EntitySystem {
 		batch.end();
 	}
 
-	public void zoom(float diff) {
-		zoom = zoom*diff;
+	public void setLinZoom(float linZoom) {
+		this.linZoom = linZoom;
+		this.zoom = (float) Math.exp(linZoom);
+	}
+
+	public float getZoom() {
+		return zoom;
+	}
+
+	public float getLinZoom() {
+		return linZoom;
 	}
 
 	public void move(int dx, int dy) {
-		worldPosX += dx/zoom;
-		worldPosY += dy/zoom;
+		worldPosX += dx/getZoom();
+		worldPosY += dy/getZoom();
 	}
 
 	public float projectX(float x) {
-		return (x-worldPosX)*zoom + screenX/2;
+		return (x-worldPosX)*getZoom() + screenX/2;
 	}
 
 	public float projectY(float y) {
-		return (y-worldPosY)*zoom + screenY/2;
+		return (y-worldPosY)*getZoom() + screenY/2;
 	}
 }

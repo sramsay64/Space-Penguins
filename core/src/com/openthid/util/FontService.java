@@ -1,4 +1,4 @@
-package com.openthid.spacepenguins;
+package com.openthid.util;
 
 import java.util.HashMap;
 

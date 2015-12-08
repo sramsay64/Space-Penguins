@@ -6,12 +6,19 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.kotcrab.vis.ui.widget.VisSlider;
 import com.openthid.spacepenguins.GdxGame;
 import com.openthid.spacepenguins.field.entities.components.MassComponent;
 import com.openthid.spacepenguins.field.entities.components.OrbitComponent;
 import com.openthid.spacepenguins.field.entities.components.PositionComponent;
 import com.openthid.spacepenguins.field.entities.components.RenderedComponent;
+import com.openthid.spacepenguins.field.entities.components.RotationComponent;
 import com.openthid.spacepenguins.field.entities.components.TextureComponent;
 import com.openthid.spacepenguins.field.entities.ship.Part;
 import com.openthid.spacepenguins.field.entities.ship.Part.MaterialType;
@@ -23,6 +30,7 @@ import com.openthid.spacepenguins.field.entities.ship.Ship;
 import com.openthid.spacepenguins.field.entities.ship.ShipGraphBuilder;
 import com.openthid.spacepenguins.field.entities.systems.OrbitSystem;
 import com.openthid.spacepenguins.field.entities.systems.RenderSystem;
+import com.openthid.spacepenguins.field.entities.systems.RotationSystem;
 import com.openthid.spacepenguins.screens.BaseScreen;
 
 /**
@@ -36,6 +44,11 @@ public class FieldScreen extends BaseScreen {
 
 	private RenderSystem renderSystem;
 	private OrbitSystem orbitSystem;
+	private RotationSystem rotationSystem;
+
+	private Stage stage;
+	
+	private VisSlider zoomSlider;
 
 	public FieldScreen(GdxGame game) {
 		super(game);
@@ -47,15 +60,22 @@ public class FieldScreen extends BaseScreen {
 		
 		orbitSystem = new OrbitSystem();
 		engine.addSystem(orbitSystem);
+		
+		rotationSystem = new RotationSystem();
+		engine.addSystem(rotationSystem);
 
-		Entity entity = new Entity()
+		Entity planet = new Entity()
 				.add(new RenderedComponent())
 				.add(new PositionComponent(0, 0))
 				.add(new MassComponent(7.6E8f))
 				.add(new TextureComponent(new Texture("Colorful_planets_1/spr_planet01.png")));
-		engine.addEntity(entity);
+		engine.addEntity(planet);
 		
-		Ship ship = new Ship(new RootPart(), new OrbitComponent(0.8f, 0.1f, 1), new PositionComponent(0, 100));
+		Ship ship = new Ship(new RootPart(),
+				new OrbitComponent(0.8f, 0.1f, 1),
+				new PositionComponent(0, 10000),
+				new RotationComponent(0, 9)
+			);
 		ShipGraphBuilder builder = new ShipGraphBuilder();
 		builder
 			.add( 1,  0, new Part(PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD))
@@ -66,16 +86,30 @@ public class FieldScreen extends BaseScreen {
 		Entity testShip = new Entity()
 				.add(new RenderedComponent())
 				.add(ship.getPositionComponent())
+				.add(ship.getRotationComponent())
 				.add(ship.getShipComponent())
 				.add(ship.getShipComponent().selfRenderedComponent)
-//				.add(ship.getOrbitComponent())
+				.add(ship.getOrbitComponent())
 				.add(ship.getMassComponent());
 		engine.addEntity(testShip);
+		
+		ScalingViewport viewport = new ScalingViewport(Scaling.stretch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new OrthographicCamera());
+		stage = new Stage(viewport, getBatch());
+		
+		zoomSlider = new VisSlider(0, 500, 1, true);
+		zoomSlider.setPosition(20, 20);
+		zoomSlider.setSize(50, 500);
+		stage.addActor(zoomSlider);
+		zoomSlider.addListener(e -> {
+			float amount = zoomSlider.getValue();
+			renderSystem.setLinZoom(-amount/10);
+			return true;
+		});
 	}
 
 	@Override
 	public void show() {
-		Gdx.input.setInputProcessor(this);
+		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
 	}
 
 	@Override
@@ -91,6 +125,7 @@ public class FieldScreen extends BaseScreen {
 			renderSystem.move(0, -1);
 		}
 		getEngine().update(delta);
+		stage.draw();
 	}
 
 	public Engine getEngine() {
@@ -118,7 +153,7 @@ public class FieldScreen extends BaseScreen {
 
 	@Override
 	public boolean scrolled(int amount) {
-		renderSystem.zoom((float) Math.pow(2.0, ((float) -amount)/10));
+		zoomSlider.setValue(zoomSlider.getValue() + amount);
 		return true;
 	}
 }

@@ -2,8 +2,8 @@ package com.openthid.spacepenguins.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.openthid.spacepenguins.FontService;
 import com.openthid.spacepenguins.GdxGame;
+import com.openthid.util.FontService;
 
 public class TitleScreen extends BaseScreen {
 

@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.FloatArray;
 import com.openthid.spacepenguins.field.entities.components.MassComponent;
 import com.openthid.spacepenguins.field.entities.components.OrbitComponent;
 import com.openthid.spacepenguins.field.entities.components.PositionComponent;
+import com.openthid.spacepenguins.field.entities.components.RotationComponent;
 import com.openthid.spacepenguins.field.entities.components.SelfRenderedComponent;
 import com.openthid.spacepenguins.field.entities.components.ShipComponent;
 import com.openthid.util.TriConsumer;
@@ -17,27 +18,29 @@ public class Ship {
 	private ShipComponent shipComponent;
 	private OrbitComponent orbitComponent;
 	private PositionComponent positionComponent;
+	private RotationComponent rotationComponent;
 
 	public Part getRootPart() {
 		return rootPart;
 	}
 
-	public Ship(Part rootPart, OrbitComponent orbitComponent, PositionComponent positionComponent) {
+	public Ship(Part rootPart, OrbitComponent orbitComponent, PositionComponent positionComponent, RotationComponent rotationComponent) {
 		this.rootPart = rootPart;
 		this.orbitComponent = orbitComponent;
 		this.positionComponent = positionComponent;
+		this.rotationComponent = rotationComponent;
 	}
 
 	public void selfRender(TriConsumer<Texture, FloatArray, Vector2> biFunCons) {
 		rootPart.traverseFromHere((part, vec) -> (i) -> {
 			Vector2 toCenter = new Vector2(vec).scl(70);
 			FloatArray floatArray = FloatArray.with(
-					positionComponent.x,// + toCenter.x,
-					positionComponent.y,// + toCenter.y,
+					positionComponent.x,
+					positionComponent.y,
 					part.getTexture().getWidth(),
 					part.getTexture().getHeight(),
 					part.getRotation(),
-					10
+					rotationComponent.angle
 				);
 			biFunCons.accept(part.getTexture(), floatArray, toCenter);
 		});
@@ -64,5 +67,9 @@ public class Ship {
 
 	public PositionComponent getPositionComponent() {
 		return positionComponent;
+	}
+
+	public RotationComponent getRotationComponent() {
+		return rotationComponent;
 	}
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.kotcrab.vis.ui.VisUI;
+import com.openthid.spacepenguins.field.FieldScreen;
 import com.openthid.spacepenguins.screens.HomeScreen;
 import com.openthid.spacepenguins.screens.TitleScreen;
 
@@ -16,6 +17,7 @@ public class GdxGame extends Game {
 
 	private HomeScreen homeScreen;
 	private TitleScreen titleScreen;
+	private FieldScreen fieldScreen;
 
 	public GdxGame(int width, int height) {
 		this.height = height;
@@ -57,5 +59,12 @@ public class GdxGame extends Game {
 			titleScreen = new TitleScreen(this);
 		}
 		return titleScreen;
+	}
+
+	public FieldScreen getFieldScreen() {
+		if (fieldScreen == null) {
+			fieldScreen = new FieldScreen(this);
+		}
+		return fieldScreen;
 	}
 }

@@ -1,6 +1,7 @@
 package com.openthid.spacepenguins.screens;
 
 import java.util.function.BiConsumer;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -9,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.openthid.spacepenguins.GdxGame;
-import com.openthid.spacepenguins.field.FieldScreen;
 
 public class HomeScreen extends BaseScreen {
 
@@ -24,8 +24,7 @@ public class HomeScreen extends BaseScreen {
 	public HomeScreen(GdxGame game) {
 		super(game);
 		btnStart = new VisTextButton("Start", makeChangeListener((ChangeEvent e, Actor a) -> {
-			FieldScreen screen = new FieldScreen(getGame());
-			getGame().setScreen(screen);
+			getGame().setScreen(getGame().getFieldScreen());
 		}));
 		btnFiles = new VisTextButton("Files", makeChangeListener((ChangeEvent e, Actor a) -> {
 			Gdx.app.log("TODO", "Files Screen");
@@ -62,7 +61,6 @@ public class HomeScreen extends BaseScreen {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		getGame().getBatch().begin();
-//		getGame().getBatch().draw(getGame().getImg(), getGame().getWidth() / 2, 0);
 		btnStart.draw(getBatch(), 1);
 		btnFiles.draw(getBatch(), 1);
 		btnSettings.draw(getBatch(), 1);
