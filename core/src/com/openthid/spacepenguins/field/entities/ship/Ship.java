@@ -32,7 +32,7 @@ public class Ship {
 	}
 
 	public void selfRender(TriConsumer<Texture, FloatArray, Vector2> biFunCons) {
-		rootPart.traverseFromHere((part, vec) -> (i) -> {
+		rootPart.traverseFromHere((part, vec, i) -> {
 			Vector2 toCenter = new Vector2(vec).scl(70);
 			FloatArray floatArray = FloatArray.with(
 					positionComponent.x,
