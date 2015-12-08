@@ -22,7 +22,9 @@ public class Part {
 	private Part[] souths = {null};
 	private Part[] easts = {null};
 	private Part[] wests = {null};
+
 	private Ship ship;
+	private Element element = null;
 
 	public Part(PartType partType, PartShape partShape, MaterialType materialType) {
 		this(partType, partShape, materialType, PartRotation.NONE);
@@ -35,7 +37,7 @@ public class Part {
 		this.partRotation = partRotation;
 	}
 
-	public String getPartFilename() {
+	protected String getTextureFilename() {
 		if (materialType == MaterialType.META) {
 			throw new RuntimeException("Incorrect Use of MaterialType.META");
 		}
@@ -43,7 +45,7 @@ public class Part {
 	}
 
 	public Texture getTexture() {
-		String key = getPartFilename();
+		String key = getTextureFilename();
 		if (!textureCache.containsKey(key)) {
 			textureCache.put(key, new Texture(key));
 			Gdx.app.log("LAZY", "Loaded new part texture '" + key + "'");
@@ -69,6 +71,10 @@ public class Part {
 
 	public Ship getShip() {
 		return ship;
+	}
+
+	public Element getElement() {
+		return element;
 	}
 
 	public PartType getPartType() {

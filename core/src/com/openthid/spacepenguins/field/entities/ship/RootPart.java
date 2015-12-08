@@ -7,7 +7,7 @@ public class RootPart extends Part {
 	}
 
 	@Override
-	public String getPartFilename() {
+	public String getTextureFilename() {
 		return "kenney/Meta-elements/BEIGE-ROOT.png";
 	}
 }
