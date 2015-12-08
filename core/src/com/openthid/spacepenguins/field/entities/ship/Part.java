@@ -2,12 +2,11 @@ package com.openthid.spacepenguins.field.entities.ship;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.openthid.util.TriConsumer;
 
 public class Part {
 
@@ -100,12 +99,12 @@ public class Part {
 		if (wests  != null) {this.wests  =  wests;}
 	}
 
-	public void traverseFromHere(BiFunction<Part, Vector2, Consumer<Integer>> action) {
+	public void traverseFromHere(TriConsumer<Part, Vector2, Integer> action) {
 		traverse(action, new ArrayList<>(), new Vector2(), 0);
 	}
 
-	public void traverse(BiFunction<Part, Vector2, Consumer<Integer>> action, ArrayList<Part> traversed, Vector2 poistionFromRoot, int distanceFromRoot) {
-		action.apply(this, poistionFromRoot).accept(distanceFromRoot);
+	public void traverse(TriConsumer<Part, Vector2, Integer> action, ArrayList<Part> traversed, Vector2 poistionFromRoot, int distanceFromRoot) {
+		action.accept(this, poistionFromRoot, distanceFromRoot);
 		for (int i = 0; i < norths.length; i++) {
 			if (norths[i] != null && !traversed.contains(norths[i])) {
 				traversed.add(norths[i]);

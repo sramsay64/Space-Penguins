@@ -73,8 +73,7 @@ public class ShipGraphBuilder {
 	}
 
 	public void setupOn(Part rootPart) {
-//		rootPart.setup(new Part[]{get(0,1)}, new Part[]{get(0,-1)}, new Part[]{get(1,0)}, new Part[]{get(-1,0)});
-		rootPart.traverseFromHere((part, pos) -> (i) -> {
+		rootPart.traverseFromHere((part, pos, i) -> {
 			part.setup(
 					new Part[]{getNorthOf(pos)},
 					new Part[]{getSouthOf(pos)},
