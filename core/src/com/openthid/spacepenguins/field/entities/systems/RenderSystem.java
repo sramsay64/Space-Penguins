@@ -16,12 +16,11 @@ import com.openthid.spacepenguins.field.entities.components.PositionComponent;
 import com.openthid.spacepenguins.field.entities.components.RenderedComponent;
 import com.openthid.spacepenguins.field.entities.components.SelfRenderedComponent;
 import com.openthid.spacepenguins.field.entities.components.TextureComponent;
-import com.openthid.util.TriConsumer;
 
 public class RenderSystem extends EntitySystem {
 
-	//	private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class); //TODO
-	//	private ComponentMapper<SpriteComponent> sm = ComponentMapper.getFor(SpriteComponent.class);
+	//private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class); //TODO
+	//private ComponentMapper<SpriteComponent> sm = ComponentMapper.getFor(SpriteComponent.class);
 
 	private ImmutableArray<Entity> renderedEntities;
 	private ImmutableArray<Entity> selfRenderedEntities;
@@ -34,6 +33,10 @@ public class RenderSystem extends EntitySystem {
 	private float zoom = 1;
 	private int screenX;
 	private int screenY;
+
+	private FocusElement focusObject = null;
+	private float focusX = 0;
+	private float focusY = 0;
 
 	private Batch batch;
 
@@ -49,8 +52,15 @@ public class RenderSystem extends EntitySystem {
 		selfRenderedEntities = engine.getEntitiesFor(Family.all(SelfRenderedComponent.class).get());
 	}
 
+	/**
+	 * Method that draws the field
+	 */
 	@Override
 	public void update(float deltaTime) {
+		if (focusObject != null) {
+			focusX = focusObject.getX();
+			focusY = focusObject.getY();
+		}
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
@@ -59,8 +69,8 @@ public class RenderSystem extends EntitySystem {
 			PositionComponent pos = entity.getComponent(PositionComponent.class);
 			Texture texture = entity.getComponent(TextureComponent.class).texture;
 			batch.draw(texture,
-					projectX(pos.x) - texture.getWidth()*getZoom()/2,
-					projectY(pos.y) - texture.getHeight()*getZoom()/2,
+					projectX(pos.x - focusX) - texture.getWidth()*getZoom()/2,
+					projectY(pos.y - focusY) - texture.getHeight()*getZoom()/2,
 					texture.getWidth()*getZoom(),
 					texture.getHeight()*getZoom()
 				);
@@ -68,28 +78,32 @@ public class RenderSystem extends EntitySystem {
 		for (int i = 0; i < selfRenderedEntities.size(); i++) {
 			Entity entity = selfRenderedEntities.get(i);
 			SelfRenderedComponent selfRenderedComponent = entity.getComponent(SelfRenderedComponent.class);
-			TriConsumer<Texture, FloatArray, Vector2> biFunCons = (texture, floats, vec) -> {
-				float rotationA = floats.items[4];
-				float rotationB = floats.items[5];
-				batch.draw(texture,
-						projectX(floats.items[0] + vec.x*MathUtils.cosDeg(rotationB) - vec.y*MathUtils.sinDeg(rotationB)) - floats.items[2]*getZoom()/2,
-						projectY(floats.items[1] + vec.y*MathUtils.cosDeg(rotationB) + vec.x*MathUtils.sinDeg(rotationB)) - floats.items[3]*getZoom()/2,
-						(floats.items[2]/2)*getZoom(),
-						(floats.items[3]/2)*getZoom(),
-						floats.items[2]*getZoom(),
-						floats.items[3]*getZoom(),
-						1,1, //No scaling
-						rotationA + rotationB,
-						0,0,
-						texture.getWidth(),
-						texture.getHeight(),
-						false,false
-					);
-			};
-			selfRenderedComponent.consumer.accept(biFunCons);
+			selfRenderedComponent.consumer.accept(this::drawCallback);
 		}
 		batch.end();
 	}
+
+	/**
+	 * Passed to {@link SelfRenderedComponent}s for them to draw to
+	 */
+	private void drawCallback(Texture texture, FloatArray floats, Vector2 vec) {
+		float rotationA = floats.items[4];
+		float rotationB = floats.items[5];
+		batch.draw(texture,
+				projectX(-focusX + floats.items[0] + vec.x*MathUtils.cosDeg(rotationB) - vec.y*MathUtils.sinDeg(rotationB)) - floats.items[2]*getZoom()/2,
+				projectY(-focusY + floats.items[1] + vec.y*MathUtils.cosDeg(rotationB) + vec.x*MathUtils.sinDeg(rotationB)) - floats.items[3]*getZoom()/2,
+				(floats.items[2]/2)*getZoom(),
+				(floats.items[3]/2)*getZoom(),
+				floats.items[2]*getZoom(),
+				floats.items[3]*getZoom(),
+				1,1, //No scaling
+				rotationA + rotationB,
+				0,0,
+				texture.getWidth(),
+				texture.getHeight(),
+				false,false
+			);
+	};
 
 	public void setLinZoom(float linZoom) {
 		this.linZoom = linZoom;
@@ -104,7 +118,25 @@ public class RenderSystem extends EntitySystem {
 		return linZoom;
 	}
 
-	public void move(int dx, int dy) {
+	public FocusElement getLockObject() {
+		return focusObject;
+	}
+
+	public void setLockObject(FocusElement lockObject) {
+		this.focusObject = lockObject;
+		if (lockObject == null) {
+			focusX = 0;
+			focusY = 0;
+		}
+	}
+
+	public void lookAt(FocusElement object) {//LATER smooth transition
+		setLockObject(object);
+		worldPosX = 0;
+		worldPosY = 0;
+	}
+
+	public void move(float dx, float dy) {
 		worldPosX += dx/getZoom();
 		worldPosY += dy/getZoom();
 	}
@@ -115,5 +147,19 @@ public class RenderSystem extends EntitySystem {
 
 	public float projectY(float y) {
 		return (y-worldPosY)*getZoom() + screenY/2;
+	}
+
+	public static interface FocusElement {
+		public PositionComponent getPositionComponent();
+
+		public default float getX() {
+			return getPositionComponent().x;
+		}
+
+		public default float getY() {
+			return getPositionComponent().y;
+		}
+		
+		public String getName();
 	}
 }

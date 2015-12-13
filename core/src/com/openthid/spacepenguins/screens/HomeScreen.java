@@ -1,15 +1,11 @@
 package com.openthid.spacepenguins.screens;
 
-import java.util.function.BiConsumer;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.openthid.spacepenguins.GdxGame;
+import com.openthid.util.FunctionalUtils;
 
 public class HomeScreen extends BaseScreen {
 
@@ -23,19 +19,19 @@ public class HomeScreen extends BaseScreen {
 
 	public HomeScreen(GdxGame game) {
 		super(game);
-		btnStart = new VisTextButton("Start", makeChangeListener((ChangeEvent e, Actor a) -> {
+		btnStart = new VisTextButton("Start", FunctionalUtils.makeChangeListener((e, a) -> {
 			getGame().setScreen(getGame().getFieldScreen());
 		}));
-		btnFiles = new VisTextButton("Files", makeChangeListener((ChangeEvent e, Actor a) -> {
+		btnFiles = new VisTextButton("Files", FunctionalUtils.makeChangeListener((e, a) -> {
 			Gdx.app.log("TODO", "Files Screen");
 		}));
-		btnSettings = new VisTextButton("Settings", makeChangeListener((ChangeEvent e, Actor a) -> {
+		btnSettings = new VisTextButton("Settings", FunctionalUtils.makeChangeListener((e, a) -> {
 			Gdx.app.log("TODO", "Settings Screen");
 		}));
-		btnBack = new VisTextButton("Back", makeChangeListener((ChangeEvent e, Actor a) -> {
+		btnBack = new VisTextButton("Back", FunctionalUtils.makeChangeListener((e, a) -> {
 			getGame().setScreen(getGame().getTitleScreen());
 		}));
-		btnQuit = new VisTextButton("Quit", makeChangeListener((ChangeEvent e, Actor a) -> {
+		btnQuit = new VisTextButton("Quit", FunctionalUtils.makeChangeListener((e, a) -> {
 			Gdx.app.log("Core", "Exiting Game. Heap size: " + Gdx.app.getNativeHeap() + ", " + Gdx.app.getJavaHeap());
 			Gdx.app.exit();
 		}));
@@ -73,16 +69,6 @@ public class HomeScreen extends BaseScreen {
 	public boolean keyTyped(char character) {
 		getGame().setScreen(getGame().getHomeScreen());
 		return true;
-	}
-
-	public static ChangeListener makeChangeListener(BiConsumer<ChangeEvent, Actor> biConsumer) {
-		return new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				biConsumer.accept(event, actor);
-			}
-
-		};
 	}
 
 	public static void arrangeButtons(int screenWidth, int screenHeight, int minX, int minY, float xRatio, float yRatio,

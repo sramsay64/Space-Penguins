@@ -3,6 +3,7 @@ package com.openthid.spacepenguins.field.entities.ship;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.FloatArray;
+import com.openthid.spacepenguins.field.entities.SpaceObject;
 import com.openthid.spacepenguins.field.entities.components.MassComponent;
 import com.openthid.spacepenguins.field.entities.components.OrbitComponent;
 import com.openthid.spacepenguins.field.entities.components.PositionComponent;
@@ -11,7 +12,7 @@ import com.openthid.spacepenguins.field.entities.components.SelfRenderedComponen
 import com.openthid.spacepenguins.field.entities.components.ShipComponent;
 import com.openthid.util.TriConsumer;
 
-public class Ship {
+public class Ship extends SpaceObject {
 
 	private Part rootPart;
 
@@ -20,12 +21,15 @@ public class Ship {
 	private PositionComponent positionComponent;
 	private RotationComponent rotationComponent;
 
+	private String name;
+
 	public Part getRootPart() {
 		return rootPart;
 	}
 
-	public Ship(Part rootPart, OrbitComponent orbitComponent, PositionComponent positionComponent, RotationComponent rotationComponent) {
+	public Ship(Part rootPart, String name, OrbitComponent orbitComponent, PositionComponent positionComponent, RotationComponent rotationComponent) {
 		this.rootPart = rootPart;
+		this.name = name;
 		this.orbitComponent = orbitComponent;
 		this.positionComponent = positionComponent;
 		this.rotationComponent = rotationComponent;
@@ -71,5 +75,9 @@ public class Ship {
 
 	public RotationComponent getRotationComponent() {
 		return rotationComponent;
+	}
+
+	public String getName() {
+		return name;
 	}
 }
