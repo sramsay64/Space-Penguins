@@ -72,13 +72,14 @@ public class ShipGraphBuilder {
 		return this;//For method chaining
 	}
 
-	public void setupOn(Part rootPart) {
-		rootPart.traverseFromHere((part, pos, i) -> {
+	public void setupOn(Ship ship) {
+		ship.getRootPart().traverseFromHere((part, pos, i) -> {
 			part.setup(
 					new Part[]{getNorthOf(pos)},
 					new Part[]{getSouthOf(pos)},
 					new Part[]{getEastOf(pos)},
-					new Part[]{getWestOf(pos)}
+					new Part[]{getWestOf(pos)},
+					ship
 				);
 		});
 	}

@@ -2,6 +2,7 @@ package com.openthid.util;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -28,9 +29,22 @@ public class FunctionalUtils {
 	 * Takes two arrays and creates a third by applying each element from the two arrays to the given function
 	 * Same as Haskell's zipWith function.
 	 */
+	public static <A, B> B[] map(A[] as, Function<A, B> function, IntFunction<B[]> newArrayFunction) {
+		B[] cs = newArrayFunction.apply(as.length);
+		for (int i = 0; i < as.length; i++) {
+			cs[i] = function.apply(as[i]);
+		}
+		return cs;
+	}
+
+	/**
+	 * Takes two arrays and creates a third by applying each element from the two arrays to the given function
+	 * Same as Haskell's zipWith function.
+	 * throws {@link ArrayIndexOutOfBoundsException} If bs.length < as.length
+	 */
 	public static <A, B, C> C[] zipWith(A[] as, B[] bs, BiFunction<A, B, C> function, IntFunction<C[]> newArrayFunction) {
 		C[] cs = newArrayFunction.apply(as.length);
-		for (int i = 0; i < bs.length; i++) {
+		for (int i = 0; i < as.length; i++) {
 			cs[i] = function.apply(as[i], bs[i]);
 		}
 		return cs;

@@ -18,6 +18,16 @@ public class IOable {
 		return new IOable(Math.abs(n));
 	}
 
+	public static IOable fromSign(int s) {
+		if (s > 0) {
+			return new IOable(1);
+		} else if (s < 0) {
+			return new IOable(-1);
+		} else {
+			return new IOable(0);
+		}
+	}
+
 	public static IOable fromInt(int i) {
 		return new IOable(i);
 	}
@@ -46,8 +56,32 @@ public class IOable {
 		return Math.abs(asInt());
 	}
 
+	public int asSign() {
+		float s = getValue();
+		if (s > 0) {
+			return 1;
+		} else if (s < 0) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+
 	public float asFloat() {
 		return getValue();
+	}
+
+	public IOable makeWithin(float min, float max) {
+		float x = getValue();
+		if (x <= max && x >= min) {
+			return new IOable(x);
+		} else if (x > min) {
+			return new IOable(max);
+		} else if (x < max) {
+			return new IOable(min);
+		} else {
+			throw new Error();
+		}
 	}
 
 	public IOable add(IOable a) {

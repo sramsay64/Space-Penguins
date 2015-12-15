@@ -35,7 +35,7 @@ public class Ship extends SpaceObject {
 		this.rotationComponent = rotationComponent;
 	}
 
-	public void selfRender(TriConsumer<Texture, FloatArray, Vector2> biFunCons) {
+	private void selfRender(TriConsumer<Texture, FloatArray, Vector2> triConsumer) {
 		rootPart.traverseFromHere((part, vec, i) -> {
 			Vector2 toCenter = new Vector2(vec).scl(70);
 			FloatArray floatArray = FloatArray.with(
@@ -46,7 +46,13 @@ public class Ship extends SpaceObject {
 					part.getRotation(),
 					rotationComponent.angle
 				);
-			biFunCons.accept(part.getTexture(), floatArray, toCenter);
+			triConsumer.accept(part.getTexture(), floatArray, toCenter);
+			if (part.getElement() != null) {
+				Texture[] elementTextures = part.getElement().getTextures();
+				for (int j = 0; j < elementTextures.length; j++) {
+					triConsumer.accept(elementTextures[j], floatArray, toCenter);
+				}
+			}//TODO Check this is working
 		});
 	}
 

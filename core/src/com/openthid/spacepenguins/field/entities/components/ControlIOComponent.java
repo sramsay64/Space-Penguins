@@ -1,23 +1,26 @@
-package com.openthid.spacepenguins.field.entities.ship.control;
+package com.openthid.spacepenguins.field.entities.components;
 
 import java.util.TreeMap;
-import java.util.function.Function;
 
 import com.badlogic.ashley.core.Component;
+import com.openthid.spacepenguins.field.entities.ship.control.ControlInput;
+import com.openthid.spacepenguins.field.entities.ship.control.ControlOutput;
+import com.openthid.spacepenguins.field.entities.ship.control.ControlReadOutput;
+import com.openthid.util.ArrayFunction;
 import com.openthid.util.FunctionalUtils;
 
 /**
  * A {@link Component} to store all the Control IOs
  */
 public class ControlIOComponent implements Component {
-	private TreeMap<String, ControlInput<? extends IOable>> inputs;
-	private TreeMap<String, ControlOutput<? extends IOable>> outputs;
-	private TreeMap<String, ControlReadOutput<? extends IOable>> readOutputs;
+	private TreeMap<String, ControlInput> inputs;
+	private TreeMap<String, ControlOutput> outputs;
+	private TreeMap<String, ControlReadOutput> readOutputs;
 
 	public ControlIOComponent(
-			TreeMap<String, ControlInput<? extends IOable>> inputs,
-			TreeMap<String, ControlOutput<? extends IOable>> outputs,
-			TreeMap<String, ControlReadOutput<? extends IOable>> readOutputs)
+			TreeMap<String, ControlInput> inputs,
+			TreeMap<String, ControlOutput> outputs,
+			TreeMap<String, ControlReadOutput> readOutputs)
 	{
 		this.inputs = inputs;
 		this.outputs = outputs;
@@ -33,10 +36,10 @@ public class ControlIOComponent implements Component {
 	 * @param controlReadOutputs
 	 * @param controlReadOutputKeys labels for controlReadOutputs
 	 */
-	public <T extends IOable> ControlIOComponent(
-			ControlInput<T>[] controlInputs, String[] controlInputKeys,
-			ControlOutput<T>[] controlOutputs, String[] controlOutputKeys,
-			ControlReadOutput<T>[] controlReadOutputs, String[] controlReadOutputKeys) {
+	public ControlIOComponent(
+			ControlInput[] controlInputs, String[] controlInputKeys,
+			ControlOutput[] controlOutputs, String[] controlOutputKeys,
+			ControlReadOutput[] controlReadOutputs, String[] controlReadOutputKeys) {
 		this(
 			FunctionalUtils.applyManyZip(new TreeMap<>(), controlInputKeys, controlInputs, TreeMap::put),
 			FunctionalUtils.applyManyZip(new TreeMap<>(), controlOutputKeys, controlOutputs, TreeMap::put),
@@ -44,15 +47,15 @@ public class ControlIOComponent implements Component {
 		);
 	}
 
-	public ControlInput<? extends IOable> getInputs(String key) {
+	public ControlInput getInputs(String key) {
 		return inputs.get(key);
 	}
 
-	public ControlOutput<? extends IOable> getOutput(String key) {
+	public ControlOutput getOutput(String key) {
 		return outputs.get(key);
 	}
 
-	public ControlReadOutput<? extends IOable> getReadOutputs(String key) {
+	public ControlReadOutput getReadOutputs(String key) {
 		return readOutputs.get(key);
 	}
 
@@ -71,13 +74,11 @@ public class ControlIOComponent implements Component {
 	 * Where the ellipses are replaced with a list of {@link String}s, {@link ControlInput}s, {@link String}s, {@link ControlOutput}s, {@link String}s and {@link ControlReadOutput} respectively
 	 */
 	//A mess of code for exposing a clean API. I wish I could write this in Haskell, it would be much shorter.
-	@SuppressWarnings("unchecked")
-	@SafeVarargs
-	public static <T extends IOable> Function<String[], Function<ControlOutput<T>[], Function<String[], Function<ControlReadOutput<T>[], Function<String[], ControlIOComponent>>>>> build(ControlInput<T>... controlInputs) {
+	public static ArrayFunction<String, ArrayFunction<ControlOutput, ArrayFunction<String, ArrayFunction<ControlReadOutput, ArrayFunction<String, ControlIOComponent>>>>> build(ControlInput... controlInputs) {
 		return (String... controlInputKeys) ->
-		(ControlOutput<T>... controlOutputs) ->
+		(ControlOutput... controlOutputs) ->
 		(String... controlOutputKeys) ->
-		(ControlReadOutput<T>... controlReadOutputs) ->
+		(ControlReadOutput... controlReadOutputs) ->
 		(String... controlReadOutputKeys) -> {
 			return new ControlIOComponent(controlInputs, controlInputKeys, controlOutputs, controlOutputKeys, controlReadOutputs, controlReadOutputKeys);
 		};

@@ -93,11 +93,16 @@ public class Part {
 		return partRotation.getRotationDegrees();
 	}
 
-	public void setup(Part[] norths, Part[] souths, Part[] easts, Part[] wests) {
+	public void setElement(Element element) {
+		this.element = element;
+	}
+
+	public void setup(Part[] norths, Part[] souths, Part[] easts, Part[] wests, Ship ship) {
 		if (norths != null) {this.norths = norths;}
 		if (souths != null) {this.souths = souths;}
 		if (easts  != null) {this.easts  =  easts;}
 		if (wests  != null) {this.wests  =  wests;}
+		if (ship   != null) {this.ship   =   ship;}
 	}
 
 	public void traverseFromHere(TriConsumer<Part, Vector2, Integer> action) {
