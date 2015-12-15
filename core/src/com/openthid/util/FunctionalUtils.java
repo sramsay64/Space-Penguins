@@ -1,6 +1,8 @@
 package com.openthid.util;
 
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.IntFunction;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -14,5 +16,13 @@ public class FunctionalUtils {
 				biConsumer.accept(event, actor);
 			}
 		};
+	}
+
+	public static <A, B, C> C[] zipWith(A[] as, B[] bs, BiFunction<A, B, C> function, IntFunction<C[]> newArrayFunction) {
+		C[] cs = newArrayFunction.apply(as.length);
+		for (int i = 0; i < bs.length; i++) {
+			cs[i] = function.apply(as[i], bs[i]);
+		}
+		return cs;
 	}
 }
