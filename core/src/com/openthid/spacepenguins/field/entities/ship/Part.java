@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.openthid.spacepenguins.field.entities.ship.elements.Element;
 import com.openthid.util.TriConsumer;
 
 public class Part {
