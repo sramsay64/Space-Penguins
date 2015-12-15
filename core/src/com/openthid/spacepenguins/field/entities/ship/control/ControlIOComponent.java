@@ -1,67 +1,59 @@
 package com.openthid.spacepenguins.field.entities.ship.control;
 
-import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.function.Function;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.utils.Array;
 import com.openthid.util.FunctionalUtils;
-import com.openthid.util.ImmutableEntry;
 
-public class ControlIOComponent implements Component {//A mess of code for exposing a clean API. I wish I could write this in Haskell, it would be much shorter.
-	private ImmutableArray<Entry<String, ControlInput<? extends Controlable>>> inputs;
-	private ImmutableArray<Entry<String, ControlOutput<? extends Controlable>>> outputs;
-	private ImmutableArray<Entry<String, ControlReadOutput<? extends Controlable>>> readOutputs;
+/**
+ * A {@link Component} to store all the Control IOs
+ */
+public class ControlIOComponent implements Component {
+	private TreeMap<String, ControlInput<? extends IOable>> inputs;
+	private TreeMap<String, ControlOutput<? extends IOable>> outputs;
+	private TreeMap<String, ControlReadOutput<? extends IOable>> readOutputs;
 
 	public ControlIOComponent(
-			ImmutableArray<Entry<String, ControlInput<? extends Controlable>>> inputs,
-			ImmutableArray<Entry<String, ControlOutput<? extends Controlable>>> outputs,
-			ImmutableArray<Entry<String, ControlReadOutput<? extends Controlable>>> readOutputs)
+			TreeMap<String, ControlInput<? extends IOable>> inputs,
+			TreeMap<String, ControlOutput<? extends IOable>> outputs,
+			TreeMap<String, ControlReadOutput<? extends IOable>> readOutputs)
 	{
 		this.inputs = inputs;
 		this.outputs = outputs;
 		this.readOutputs = readOutputs;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T extends Controlable> ControlIOComponent(
-			ControlInput<T>[] controlInputs,
-			String[] controlInputKeys,
-			ControlOutput<T>[] controlOutputs,
-			String[] controlOutputKeys,
-			ControlReadOutput<T>[] controlReadOutputs,
-			String[] controlReadOutputKeys)
-	{
+	/**
+	 * Creates a {@link ControlIOComponent} from lists of Objects and their respective String labels/keys
+	 * @param controlInputs
+	 * @param controlInputKeys labels for controlInputs
+	 * @param controlOutputs
+	 * @param controlOutputKeys labels for controlOutputs
+	 * @param controlReadOutputs
+	 * @param controlReadOutputKeys labels for controlReadOutputs
+	 */
+	public <T extends IOable> ControlIOComponent(
+			ControlInput<T>[] controlInputs, String[] controlInputKeys,
+			ControlOutput<T>[] controlOutputs, String[] controlOutputKeys,
+			ControlReadOutput<T>[] controlReadOutputs, String[] controlReadOutputKeys) {
 		this(
-			new ImmutableArray<>(new Array<>(FunctionalUtils.zipWith(
-					controlInputKeys,
-					controlInputs, (key, inp) -> new ImmutableEntry<String, ControlInput<? extends Controlable>>(key, inp),
-					i -> new ImmutableEntry[i]
-				))),
-			new ImmutableArray<>(new Array<>(FunctionalUtils.zipWith(
-					controlOutputKeys,
-					controlOutputs, (key, inp) -> new ImmutableEntry<String, ControlOutput<? extends Controlable>>(key, inp),
-					i -> new ImmutableEntry[i]
-				))),
-			new ImmutableArray<>(new Array<>(FunctionalUtils.zipWith(
-					controlReadOutputKeys,
-					controlReadOutputs, (key, inp) -> new ImmutableEntry<String, ControlReadOutput<? extends Controlable>>(key, inp),
-					i -> new ImmutableEntry[i]
-				)))
+			FunctionalUtils.applyManyZip(new TreeMap<>(), controlInputKeys, controlInputs, TreeMap::put),
+			FunctionalUtils.applyManyZip(new TreeMap<>(), controlOutputKeys, controlOutputs, TreeMap::put),
+			FunctionalUtils.applyManyZip(new TreeMap<>(), controlReadOutputKeys, controlReadOutputs, TreeMap::put)
 		);
 	}
 
-	public ImmutableArray<Entry<String, ControlInput<? extends Controlable>>> getInputs() {
-		return inputs;
+	public ControlInput<? extends IOable> getInputs(String key) {
+		return inputs.get(key);
 	}
 
-	public ImmutableArray<Entry<String, ControlOutput<? extends Controlable>>> getOutputs() {
-		return outputs;
+	public ControlOutput<? extends IOable> getOutput(String key) {
+		return outputs.get(key);
 	}
 
-	public ImmutableArray<Entry<String, ControlReadOutput<? extends Controlable>>> getReadOutputs() {
-		return readOutputs;
+	public ControlReadOutput<? extends IOable> getReadOutputs(String key) {
+		return readOutputs.get(key);
 	}
 
 	/**
@@ -76,15 +68,17 @@ public class ControlIOComponent implements Component {//A mess of code for expos
 	 *     .apply(...)
 	 *     .apply(...)
 	 * </pre>
-	 * Where the ellipses are replaced with a list of {@link ControlInput}s and {@link ControlOutput}s respectively
+	 * Where the ellipses are replaced with a list of {@link String}s, {@link ControlInput}s, {@link String}s, {@link ControlOutput}s, {@link String}s and {@link ControlReadOutput} respectively
 	 */
+	//A mess of code for exposing a clean API. I wish I could write this in Haskell, it would be much shorter.
+	@SuppressWarnings("unchecked")
 	@SafeVarargs
-	public static <T extends Controlable> Function<String[], Function<ControlOutput<T>[], Function<String[], Function<ControlReadOutput<T>[], Function<String[], ControlIOComponent>>>>> build(ControlInput<T>... controlInputs) {
-		return (String[] controlInputKeys) ->
-		(ControlOutput<T>[] controlOutputs) ->
-		(String[] controlOutputKeys) ->
-		(ControlReadOutput<T>[] controlReadOutputs) ->
-		(String[] controlReadOutputKeys) -> {
+	public static <T extends IOable> Function<String[], Function<ControlOutput<T>[], Function<String[], Function<ControlReadOutput<T>[], Function<String[], ControlIOComponent>>>>> build(ControlInput<T>... controlInputs) {
+		return (String... controlInputKeys) ->
+		(ControlOutput<T>... controlOutputs) ->
+		(String... controlOutputKeys) ->
+		(ControlReadOutput<T>... controlReadOutputs) ->
+		(String... controlReadOutputKeys) -> {
 			return new ControlIOComponent(controlInputs, controlInputKeys, controlOutputs, controlOutputKeys, controlReadOutputs, controlReadOutputKeys);
 		};
 	}
