@@ -32,7 +32,9 @@ import com.openthid.spacepenguins.field.entities.ship.Part.PartType;
 import com.openthid.spacepenguins.field.entities.ship.RootPart;
 import com.openthid.spacepenguins.field.entities.ship.Ship;
 import com.openthid.spacepenguins.field.entities.ship.ShipGraphBuilder;
+import com.openthid.spacepenguins.field.entities.ship.elements.Clock;
 import com.openthid.spacepenguins.field.entities.ship.elements.Gyro;
+import com.openthid.spacepenguins.field.entities.systems.ClockSystem;
 import com.openthid.spacepenguins.field.entities.systems.ControlIOSystem;
 import com.openthid.spacepenguins.field.entities.systems.OrbitSystem;
 import com.openthid.spacepenguins.field.entities.systems.RenderSystem;
@@ -54,6 +56,7 @@ public class FieldScreen extends BaseScreen {
 	private OrbitSystem orbitSystem;
 	private RotationSystem rotationSystem;
 	private ControlIOSystem controlIOSystem;
+	private ClockSystem clockSystem;
 
 	private RailedBody mainPlanet;
 	private Ship[] ships;
@@ -83,6 +86,9 @@ public class FieldScreen extends BaseScreen {
 		controlIOSystem = new ControlIOSystem();
 		engine.addSystem(controlIOSystem);
 		
+		clockSystem = new ClockSystem();
+		engine.addSystem(clockSystem);
+		
 		viewport = new ScalingViewport(Scaling.stretch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new OrthographicCamera());
 		stage = new Stage(viewport, getBatch());
 		
@@ -107,9 +113,9 @@ public class FieldScreen extends BaseScreen {
 		
 		Ship ship = new Ship(new RootPart(),
 				"Test Ship",
-				new OrbitComponent(0.8f, 0.1f, 1),
-				new PositionComponent(0, 10000),
-				new RotationComponent(0, 9)
+				new OrbitComponent(7.2f, 0, 1),
+				new PositionComponent(0, 1000),
+				new RotationComponent(0, 0)
 			);
 		ShipGraphBuilder builder = new ShipGraphBuilder();
 		builder
@@ -117,7 +123,8 @@ public class FieldScreen extends BaseScreen {
 			.add(-1,  0, new Part(PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD, PartRotation.QUARTER))
 			.add( 0, -1, new Part(PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD))
 			.add( 0, -1, part -> new Gyro(part, 5))
-			.add( 0,  1, new Part(PartType.SOLID, PartShape.CIRCLE, MaterialType.FUEL))
+			.add( 0,  1, new Part(PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD))
+			.add( 0,  1, part -> new Clock(part))
 			.setupOn(ship, engine::addEntity);
 		addShip(ship);
 	}

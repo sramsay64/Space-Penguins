@@ -25,6 +25,7 @@ public class ControlIOSystem extends EntitySystem {
 		scriptEngine.put("io", new IOScriptInterface());
 		try {
 			scriptEngine.eval("var IOable = Java.type(\"com.openthid.spacepenguins.field.entities.ship.control.IOable\")");
+			scriptEngine.eval("var mkio = IOable.fromFloat");
 		} catch (ScriptException e) {
 			throw new Error(e);
 		}
@@ -38,7 +39,11 @@ public class ControlIOSystem extends EntitySystem {
 	@Override
 	public void update(float deltaTime) {
 		try {
-			scriptEngine.eval("var x = io.getO(\"GYRO\", \"torque\").set(IOable.fromFloat(-5)); //print(x);");
+			scriptEngine.eval("var t = io.getI(\"Clock\", \"time\").get();");
+			scriptEngine.eval("var tt = t.add(mkio(9)).mul(mkio(10)).sinDeg().mul(mkio(5));");
+			scriptEngine.eval("var x = io.getO(\"Gyro\", \"torque\").set(tt);");
+			scriptEngine.eval("print(tt.getValue());");
+			scriptEngine.eval("print(x);");
 		} catch (ScriptException e) {
 			e.printStackTrace();
 		}

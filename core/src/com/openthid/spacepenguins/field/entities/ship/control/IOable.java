@@ -1,5 +1,7 @@
 package com.openthid.spacepenguins.field.entities.ship.control;
 
+import com.badlogic.gdx.math.MathUtils;
+
 /**
  * A type of value that can be controlled or read
  */
@@ -108,6 +110,10 @@ public class IOable {
 
 	public IOable div(IOable a) {
 		return new IOable(getValue() / a.getValue());
+	}
+
+	public IOable sinDeg() {
+		return new IOable(MathUtils.sinDeg(getValue()));
 	}
 
 	@Override
