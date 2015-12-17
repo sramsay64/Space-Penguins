@@ -33,6 +33,7 @@ import com.openthid.spacepenguins.field.entities.ship.RootPart;
 import com.openthid.spacepenguins.field.entities.ship.Ship;
 import com.openthid.spacepenguins.field.entities.ship.ShipGraphBuilder;
 import com.openthid.spacepenguins.field.entities.ship.elements.Gyro;
+import com.openthid.spacepenguins.field.entities.systems.ControlIOSystem;
 import com.openthid.spacepenguins.field.entities.systems.OrbitSystem;
 import com.openthid.spacepenguins.field.entities.systems.RenderSystem;
 import com.openthid.spacepenguins.field.entities.systems.RenderSystem.FocusElement;
@@ -52,6 +53,7 @@ public class FieldScreen extends BaseScreen {
 	private RenderSystem renderSystem;
 	private OrbitSystem orbitSystem;
 	private RotationSystem rotationSystem;
+	private ControlIOSystem controlIOSystem;
 
 	private RailedBody mainPlanet;
 	private Ship[] ships;
@@ -77,6 +79,9 @@ public class FieldScreen extends BaseScreen {
 		
 		rotationSystem = new RotationSystem();
 		engine.addSystem(rotationSystem);
+		
+		controlIOSystem = new ControlIOSystem();
+		engine.addSystem(controlIOSystem);
 		
 		viewport = new ScalingViewport(Scaling.stretch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new OrthographicCamera());
 		stage = new Stage(viewport, getBatch());
@@ -106,16 +111,15 @@ public class FieldScreen extends BaseScreen {
 				new PositionComponent(0, 10000),
 				new RotationComponent(0, 9)
 			);
-		Part part = new Part(PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD);
 		ShipGraphBuilder builder = new ShipGraphBuilder();
 		builder
 			.add( 1,  0, new Part(PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD))
 			.add(-1,  0, new Part(PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD, PartRotation.QUARTER))
-			.add( 0, -1, part)
+			.add( 0, -1, new Part(PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD))
+			.add( 0, -1, part -> new Gyro(part, 5))
 			.add( 0,  1, new Part(PartType.SOLID, PartShape.CIRCLE, MaterialType.FUEL))
-			.setupOn(ship);
+			.setupOn(ship, engine::addEntity);
 		addShip(ship);
-		part.setElement(new Gyro(part, 5));
 	}
 
 	@Override

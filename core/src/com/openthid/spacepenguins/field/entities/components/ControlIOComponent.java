@@ -1,6 +1,8 @@
 package com.openthid.spacepenguins.field.entities.components;
 
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.BiConsumer;
 
 import com.badlogic.ashley.core.Component;
 import com.openthid.spacepenguins.field.entities.ship.control.ControlInput;
@@ -13,15 +15,14 @@ import com.openthid.util.FunctionalUtils;
  * A {@link Component} to store all the Control IOs
  */
 public class ControlIOComponent implements Component {
+
+	private String nameSpace;
 	private TreeMap<String, ControlInput> inputs;
 	private TreeMap<String, ControlOutput> outputs;
 	private TreeMap<String, ControlReadOutput> readOutputs;
 
-	public ControlIOComponent(
-			TreeMap<String, ControlInput> inputs,
-			TreeMap<String, ControlOutput> outputs,
-			TreeMap<String, ControlReadOutput> readOutputs)
-	{
+	public ControlIOComponent(String nameSpace, TreeMap<String, ControlInput> inputs, TreeMap<String, ControlOutput> outputs, TreeMap<String, ControlReadOutput> readOutputs) {
+		this.nameSpace = nameSpace;
 		this.inputs = inputs;
 		this.outputs = outputs;
 		this.readOutputs = readOutputs;
@@ -37,17 +38,35 @@ public class ControlIOComponent implements Component {
 	 * @param controlReadOutputKeys labels for controlReadOutputs
 	 */
 	public ControlIOComponent(
+			String nameSpace,
 			ControlInput[] controlInputs, String[] controlInputKeys,
 			ControlOutput[] controlOutputs, String[] controlOutputKeys,
 			ControlReadOutput[] controlReadOutputs, String[] controlReadOutputKeys) {
 		this(
+			nameSpace,
 			FunctionalUtils.applyManyZip(new TreeMap<>(), controlInputKeys, controlInputs, TreeMap::put),
 			FunctionalUtils.applyManyZip(new TreeMap<>(), controlOutputKeys, controlOutputs, TreeMap::put),
 			FunctionalUtils.applyManyZip(new TreeMap<>(), controlReadOutputKeys, controlReadOutputs, TreeMap::put)
 		);
 	}
 
-	public ControlInput getInputs(String key) {
+	public String getNameSpace() {
+		return nameSpace;
+	}
+
+	public Set<String> getInputKeys() {
+		return inputs.keySet();
+	}
+
+	public Set<String> getOutputKeys() {
+		return outputs.keySet();
+	}
+
+	public Set<String> getReadOutputKeys() {
+		return readOutputs.keySet();
+	}
+
+	public ControlInput getInput(String key) {
 		return inputs.get(key);
 	}
 
@@ -57,6 +76,18 @@ public class ControlIOComponent implements Component {
 
 	public ControlReadOutput getReadOutputs(String key) {
 		return readOutputs.get(key);
+	}
+
+	public void forEachInput(BiConsumer<String, ControlInput> biConsumer) {
+		inputs.forEach(biConsumer);
+	}
+
+	public void forEachOutput(BiConsumer<String, ControlOutput> biConsumer) {
+		outputs.forEach(biConsumer);
+	}
+
+	public void forEachReadOutput(BiConsumer<String, ControlReadOutput> biConsumer) {
+		readOutputs.forEach(biConsumer);
 	}
 
 	/**
@@ -74,13 +105,13 @@ public class ControlIOComponent implements Component {
 	 * Where the ellipses are replaced with a list of {@link String}s, {@link ControlInput}s, {@link String}s, {@link ControlOutput}s, {@link String}s and {@link ControlReadOutput} respectively
 	 */
 	//A mess of code for exposing a clean API. I wish I could write this in Haskell, it would be much shorter.
-	public static ArrayFunction<String, ArrayFunction<ControlOutput, ArrayFunction<String, ArrayFunction<ControlReadOutput, ArrayFunction<String, ControlIOComponent>>>>> build(ControlInput... controlInputs) {
+	public static ArrayFunction<String, ArrayFunction<ControlOutput, ArrayFunction<String, ArrayFunction<ControlReadOutput, ArrayFunction<String, ControlIOComponent>>>>> build(String nameSpace, ControlInput... controlInputs) {
 		return (String... controlInputKeys) ->
 		(ControlOutput... controlOutputs) ->
 		(String... controlOutputKeys) ->
 		(ControlReadOutput... controlReadOutputs) ->
 		(String... controlReadOutputKeys) -> {
-			return new ControlIOComponent(controlInputs, controlInputKeys, controlOutputs, controlOutputKeys, controlReadOutputs, controlReadOutputKeys);
+			return new ControlIOComponent(nameSpace, controlInputs, controlInputKeys, controlOutputs, controlOutputKeys, controlReadOutputs, controlReadOutputKeys);
 		};
 	}
 }

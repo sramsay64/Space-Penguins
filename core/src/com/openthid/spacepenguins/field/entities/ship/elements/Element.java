@@ -1,12 +1,11 @@
 package com.openthid.spacepenguins.field.entities.ship.elements;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.openthid.spacepenguins.field.entities.components.ControlIOComponent;
+import com.badlogic.gdx.utils.Array;
 import com.openthid.spacepenguins.field.entities.ship.Part;
 import com.openthid.util.StringUtils;
 
@@ -19,19 +18,17 @@ public abstract class Element {
 	private Texture[] textures;
 
 	private String typeName;
-	private ArrayList<Integer> textureMasks;
+	private Array<Integer> textureMasks;
 
-	protected Element(Part part, String typeName) {
+	protected Element(Part part, String typeName, Array<Integer> textureMasks) {
 		this.part = part;
 		this.typeName = typeName;
-		textureMasks = new ArrayList<>();
+		this.textureMasks = textureMasks;
 	}
 
 	public Part getPart() {
 		return part;
 	}
-
-	public abstract ControlIOComponent getControlIOComponent();
 
 	public abstract Component[] getComponents();
 
@@ -50,12 +47,17 @@ public abstract class Element {
 	public Texture[] getTextures() {
 		if (textures == null) {
 			String baseName = "kenney/Tech-Parts/" + part.getPartShape().toString() + "/" + getType() + "/";
-			textures = new Texture[textureMasks.size()+1];
+			textures = new Texture[textureMasks.size+1];
 			textures[0] = getTexture(baseName + "Main.png");
-			for (int i = 0; i < textureMasks.size(); i++) {
-				textures[i+1] = getTexture(StringUtils.alphabet[i] + "" + textureMasks.get(i));
+			for (int i = 0; i < textureMasks.size; i++) {
+				textures[i+1] = getTexture(baseName + "Mask-" + StringUtils.alphabet[i] + "-" + textureMasks.get(i) + ".png");
 			}
 		}
 		return textures;
+	}
+
+	protected void updateMask(int i, int value) {
+		textureMasks.set(i, value);
+		textures[i+1] = getTexture("kenney/Tech-Parts/" + part.getPartShape().toString() + "/" + getType() + "/" + "Mask-" + StringUtils.alphabet[i] + "-" + textureMasks.get(i) + ".png");
 	}
 }

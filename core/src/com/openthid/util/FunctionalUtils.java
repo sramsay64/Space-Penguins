@@ -1,10 +1,12 @@
 package com.openthid.util;
 
+import java.util.Comparator;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
@@ -24,6 +26,32 @@ public class FunctionalUtils {
 			}
 		};
 	}
+
+	/**
+	 * A {@link Comparator} for {@link Vector2}. Vectors Form a
+	 * <a href="https://en.wikipedia.org/wiki/Partially_ordered_set">Poset</a>
+	 * so there is no possible mathematically sound implementation.
+	 * This is an implementation which follows all the laws defined in {@link Comparator}
+	 * while being fast
+	 */
+	public static final Comparator<Vector2> VECTOR2COMPARATOR = new Comparator<Vector2>() {
+		public int compare(Vector2 a, Vector2 b) {
+			if (a.x == b.x && a.y == b.y) {
+				return 0;
+			}
+			if (a.x != b.x) {
+				if (a.x > b.x) {
+					return 1;
+				}
+				return -1;
+			} else {
+				if (a.y > b.y) {
+					return 1;
+				}
+				return -1;
+			}
+		};
+	};
 
 	/**
 	 * Takes two arrays and creates a third by applying each element from the two arrays to the given function

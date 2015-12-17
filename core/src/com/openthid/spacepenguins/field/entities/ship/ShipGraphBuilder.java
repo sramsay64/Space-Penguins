@@ -1,46 +1,37 @@
 package com.openthid.spacepenguins.field.entities.ship;
 
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.TreeMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
+import com.openthid.spacepenguins.field.entities.ship.elements.Element;
+import com.openthid.util.FunctionalUtils;
 
 public class ShipGraphBuilder {
 
-	private TreeMap<Vector2, Part> map;
+	private TreeMap<Vector2, Part> partMap;
+	private TreeMap<Vector2, Function<Part, Element>> elementMap;
 
 	public ShipGraphBuilder() {
-		map = new TreeMap<>(new Comparator<Vector2>() {
-			public int compare(Vector2 a, Vector2 b) {
-				if (a.x == b.x && a.y == b.y) {
-					return 0;
-				}
-				//Vectors Form a Poset so this is bad math
-				//We should however follow the law: compare(a, b) = - compare(b, a)
-				if (a.x != b.x) {
-					if (a.x > b.x) {
-						return 1;
-					}
-					return -1;
-				} else {
-					if (a.y > b.y) {
-						return 1;
-					}
-					return -1;
-				}
-			};
-		});
+		partMap = new TreeMap<>(FunctionalUtils.VECTOR2COMPARATOR);
+		elementMap = new TreeMap<>(FunctionalUtils.VECTOR2COMPARATOR);
 	}
 
-	public Part get(Vector2 positionFromRoot) {
-		if (map.containsKey(positionFromRoot)) {
-			return map.get(positionFromRoot);
+	private Function<Part, Element> getElementSupplier(Vector2 positionFromRoot) {
+		if (elementMap.containsKey(positionFromRoot)) {
+			return elementMap.get(positionFromRoot);
 		}
 		return null;
 	}
 
-	public Part get(float x, float y) {
-		return get(new Vector2(x, y));
+	private Part get(Vector2 positionFromRoot) {
+		if (partMap.containsKey(positionFromRoot)) {
+			return partMap.get(positionFromRoot);
+		}
+		return null;
 	}
 
 	private Part getFrom(Vector2 pos, int x, int y) {
@@ -68,11 +59,20 @@ public class ShipGraphBuilder {
 	}
 
 	public ShipGraphBuilder add(Vector2 positionFromRoot, Part part) {
-		map.put(positionFromRoot, part);
+		partMap.put(positionFromRoot, part);
 		return this;//For method chaining
 	}
 
-	public void setupOn(Ship ship) {
+	public ShipGraphBuilder add(int x, int y, Function<Part, Element> elementSupplier) {
+		return add(new Vector2(x, y), elementSupplier);
+	}
+
+	public ShipGraphBuilder add(Vector2 positionFromRoot, Function<Part, Element> elementSupplier) {
+		elementMap.put(positionFromRoot, elementSupplier);
+		return this;//For method chaining
+	}
+
+	public void setupOn(Ship ship, Consumer<Entity> entityConsumer) {
 		ship.getRootPart().traverseFromHere((part, pos, i) -> {
 			part.setup(
 					new Part[]{getNorthOf(pos)},
@@ -81,6 +81,14 @@ public class ShipGraphBuilder {
 					new Part[]{getWestOf(pos)},
 					ship
 				);
+			if (elementMap.containsKey(pos)) {
+				part.setElement(getElementSupplier(pos).apply(part));
+				Entity elementEntity = new Entity();
+				Arrays.stream(part.getElement().getComponents()).forEach(component -> {
+					elementEntity.add(component);
+				});
+				entityConsumer.accept(elementEntity);
+			}
 		});
 	}
 }
