@@ -16,7 +16,7 @@ public class Clock extends Element {
 	public Clock(Part part) {
 		super(part, "CLOCK", new Array<>(new Integer[]{}));
 		controlIOComponent = ControlIOComponent
-				.build("Clock", this::getTime).apply("time")
+				.build(part.getShip(), "Clock", this::getTime).apply("time")
 				.apply().apply()
 				.apply().apply();
 		clockComponent = new ClockComponent(time -> this.time = time);
@@ -29,5 +29,10 @@ public class Clock extends Element {
 	@Override
 	public Component[] getComponents() {
 		return new Component[]{controlIOComponent, clockComponent};
+	}
+
+	@Override
+	public ControlIOComponent getIOComponent() {
+		return controlIOComponent;
 	}
 }

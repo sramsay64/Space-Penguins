@@ -5,6 +5,7 @@ import java.util.TreeMap;
 import java.util.function.BiConsumer;
 
 import com.badlogic.ashley.core.Component;
+import com.openthid.spacepenguins.field.entities.ship.Ship;
 import com.openthid.spacepenguins.field.entities.ship.control.ControlInput;
 import com.openthid.spacepenguins.field.entities.ship.control.ControlOutput;
 import com.openthid.spacepenguins.field.entities.ship.control.ControlReadOutput;
@@ -16,12 +17,15 @@ import com.openthid.util.FunctionalUtils;
  */
 public class ControlIOComponent implements Component {
 
+	private Ship ship;
+
 	private String nameSpace;
 	private TreeMap<String, ControlInput> inputs;
 	private TreeMap<String, ControlOutput> outputs;
 	private TreeMap<String, ControlReadOutput> readOutputs;
 
-	public ControlIOComponent(String nameSpace, TreeMap<String, ControlInput> inputs, TreeMap<String, ControlOutput> outputs, TreeMap<String, ControlReadOutput> readOutputs) {
+	public ControlIOComponent(Ship ship, String nameSpace, TreeMap<String, ControlInput> inputs, TreeMap<String, ControlOutput> outputs, TreeMap<String, ControlReadOutput> readOutputs) {
+		this.ship = ship;
 		this.nameSpace = nameSpace;
 		this.inputs = inputs;
 		this.outputs = outputs;
@@ -38,16 +42,22 @@ public class ControlIOComponent implements Component {
 	 * @param controlReadOutputKeys labels for controlReadOutputs
 	 */
 	public ControlIOComponent(
+			Ship ship,
 			String nameSpace,
 			ControlInput[] controlInputs, String[] controlInputKeys,
 			ControlOutput[] controlOutputs, String[] controlOutputKeys,
 			ControlReadOutput[] controlReadOutputs, String[] controlReadOutputKeys) {
 		this(
+			ship,
 			nameSpace,
 			FunctionalUtils.applyManyZip(new TreeMap<>(), controlInputKeys, controlInputs, TreeMap::put),
 			FunctionalUtils.applyManyZip(new TreeMap<>(), controlOutputKeys, controlOutputs, TreeMap::put),
 			FunctionalUtils.applyManyZip(new TreeMap<>(), controlReadOutputKeys, controlReadOutputs, TreeMap::put)
 		);
+	}
+
+	public Ship getShip() {
+		return ship;
 	}
 
 	public String getNameSpace() {
@@ -105,13 +115,13 @@ public class ControlIOComponent implements Component {
 	 * Where the ellipses are replaced with a list of {@link String}s, {@link ControlInput}s, {@link String}s, {@link ControlOutput}s, {@link String}s and {@link ControlReadOutput} respectively
 	 */
 	//A mess of code for exposing a clean API. I wish I could write this in Haskell, it would be much shorter.
-	public static ArrayFunction<String, ArrayFunction<ControlOutput, ArrayFunction<String, ArrayFunction<ControlReadOutput, ArrayFunction<String, ControlIOComponent>>>>> build(String nameSpace, ControlInput... controlInputs) {
+	public static ArrayFunction<String, ArrayFunction<ControlOutput, ArrayFunction<String, ArrayFunction<ControlReadOutput, ArrayFunction<String, ControlIOComponent>>>>> build(Ship ship, String nameSpace, ControlInput... controlInputs) {
 		return (String... controlInputKeys) ->
 		(ControlOutput... controlOutputs) ->
 		(String... controlOutputKeys) ->
 		(ControlReadOutput... controlReadOutputs) ->
 		(String... controlReadOutputKeys) -> {
-			return new ControlIOComponent(nameSpace, controlInputs, controlInputKeys, controlOutputs, controlOutputKeys, controlReadOutputs, controlReadOutputKeys);
+			return new ControlIOComponent(ship, nameSpace, controlInputs, controlInputKeys, controlOutputs, controlOutputKeys, controlReadOutputs, controlReadOutputKeys);
 		};
 	}
 }

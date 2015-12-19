@@ -6,8 +6,6 @@ This is an alpha game heavily inspired by both Kerbal Space Program and Bad Pigg
 
 ## To-Do
 
-* Rotation of ships
-* Focus Camera
 * Exit to main screen
 * Ship loading
 * Ship building

@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
+import com.openthid.spacepenguins.field.entities.components.ControlIOComponent;
 import com.openthid.spacepenguins.field.entities.ship.Part;
 import com.openthid.util.StringUtils;
 
@@ -60,4 +61,6 @@ public abstract class Element {
 		textureMasks.set(i, value);
 		textures[i+1] = getTexture("kenney/Tech-Parts/" + part.getPartShape().toString() + "/" + getType() + "/" + "Mask-" + StringUtils.alphabet[i] + "-" + textureMasks.get(i) + ".png");
 	}
+
+	public abstract ControlIOComponent getIOComponent();
 }

@@ -1,76 +1,33 @@
 package com.openthid.spacepenguins.field.entities.systems;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.openthid.spacepenguins.field.entities.components.ControlIOComponent;
-import com.openthid.spacepenguins.field.entities.ship.control.ControlInput;
-import com.openthid.spacepenguins.field.entities.ship.control.ControlOutput;
+//import com.openthid.spacepenguins.field.entities.components.ControlIOComponent;
+import com.openthid.spacepenguins.field.entities.components.ShipComponent;
+//import com.openthid.spacepenguins.field.entities.ship.control.ShipProg;
 
 public class ControlIOSystem extends EntitySystem {
 
-	private ImmutableArray<Entity> entities;
-	private ScriptEngine scriptEngine;
+//	private ShipProg shipProg; 
+//	private ImmutableArray<Entity> ioComponents;
+	private ImmutableArray<Entity> shipEntities;
 
 	public ControlIOSystem() {
-		ScriptEngineManager manager = new ScriptEngineManager();
-		scriptEngine = manager.getEngineByName("nashorn");
-		
-		scriptEngine.put("io", new IOScriptInterface());
-		try {
-			scriptEngine.eval("var IOable = Java.type(\"com.openthid.spacepenguins.field.entities.ship.control.IOable\")");
-			scriptEngine.eval("var mkio = IOable.fromFloat");
-		} catch (ScriptException e) {
-			throw new Error(e);
-		}
 	}
 
 	@Override
 	public void addedToEngine(Engine engine) {
-		entities = engine.getEntitiesFor(Family.all(ControlIOComponent.class).get());
+//		ioComponents = engine.getEntitiesFor(Family.all(ControlIOComponent.class).get());
+		shipEntities = engine.getEntitiesFor(Family.all(ShipComponent.class).get());
 	}
 
 	@Override
 	public void update(float deltaTime) {
-		try {
-			scriptEngine.eval("var t = io.getI(\"Clock\", \"time\").get();");
-			scriptEngine.eval("var tt = t.add(mkio(9)).mul(mkio(10)).sinDeg().mul(mkio(5));");
-			scriptEngine.eval("var x = io.getO(\"Gyro\", \"torque\").set(tt);");
-			scriptEngine.eval("print(tt.getValue());");
-			scriptEngine.eval("print(x);");
-		} catch (ScriptException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public class IOScriptInterface {
-		private IOScriptInterface() {
-		}
-
-		public ControlInput getI(String nameSpace, String key) {
-			for (int i = 0; i < entities.size(); i++) {
-				ControlIOComponent ioComponent = entities.get(i).getComponent(ControlIOComponent.class);
-				if (ioComponent.getNameSpace().equals(nameSpace)) {
-					return ioComponent.getInput(key);
-				}
-			}
-			return null;
-		}
-
-		public ControlOutput getO(String nameSpace, String key) {
-			for (int i = 0; i < entities.size(); i++) {
-				ControlIOComponent ioComponent = entities.get(i).getComponent(ControlIOComponent.class);
-				if (ioComponent.getNameSpace().equals(nameSpace)) {
-					return ioComponent.getOutput(key);
-				}
-			}
-			return null;
-		}
+		shipEntities.forEach(entity -> {
+			entity.getComponent(ShipComponent.class).ship.updateProg(deltaTime);
+		});
 	}
 }

@@ -21,7 +21,7 @@ public class Gyro extends Element {
 		torque = IOable.ZERO;
 		this.maxTorque = maxTorque;
 		controlIOComponent = ControlIOComponent
-				.build("Gyro").apply()
+				.build(part.getShip(), "Gyro").apply()
 				.apply(this::setTorque).apply("torque")
 				.apply().apply();
 		torqueComponent = new TorqueComponent(
@@ -50,5 +50,10 @@ public class Gyro extends Element {
 	@Override
 	public Component[] getComponents() {
 		return new Component[]{controlIOComponent, torqueComponent};
+	}
+
+	@Override
+	public ControlIOComponent getIOComponent() {
+		return controlIOComponent;
 	}
 }

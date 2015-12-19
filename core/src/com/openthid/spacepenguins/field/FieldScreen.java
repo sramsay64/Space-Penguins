@@ -29,6 +29,8 @@ import com.openthid.spacepenguins.field.entities.ship.Part.MaterialType;
 import com.openthid.spacepenguins.field.entities.ship.Part.PartRotation;
 import com.openthid.spacepenguins.field.entities.ship.Part.PartShape;
 import com.openthid.spacepenguins.field.entities.ship.Part.PartType;
+import com.openthid.spacepenguins.field.entities.ship.control.JavaScriptShipProg;
+import com.openthid.spacepenguins.field.entities.ship.control.ShipProg;
 import com.openthid.spacepenguins.field.entities.ship.RootPart;
 import com.openthid.spacepenguins.field.entities.ship.Ship;
 import com.openthid.spacepenguins.field.entities.ship.ShipGraphBuilder;
@@ -40,6 +42,7 @@ import com.openthid.spacepenguins.field.entities.systems.OrbitSystem;
 import com.openthid.spacepenguins.field.entities.systems.RenderSystem;
 import com.openthid.spacepenguins.field.entities.systems.RenderSystem.FocusElement;
 import com.openthid.spacepenguins.field.entities.systems.RotationSystem;
+import com.openthid.spacepenguins.field.entities.systems.UserInputSystem;
 import com.openthid.spacepenguins.screens.BaseScreen;
 import com.openthid.util.FunctionalUtils;
 
@@ -57,6 +60,7 @@ public class FieldScreen extends BaseScreen {
 	private RotationSystem rotationSystem;
 	private ControlIOSystem controlIOSystem;
 	private ClockSystem clockSystem;
+	private UserInputSystem userInputSystem;
 
 	private RailedBody mainPlanet;
 	private Ship[] ships;
@@ -89,6 +93,9 @@ public class FieldScreen extends BaseScreen {
 		clockSystem = new ClockSystem();
 		engine.addSystem(clockSystem);
 		
+		userInputSystem = new UserInputSystem();
+		engine.addSystem(userInputSystem);
+		
 		viewport = new ScalingViewport(Scaling.stretch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new OrthographicCamera());
 		stage = new Stage(viewport, getBatch());
 		
@@ -117,6 +124,7 @@ public class FieldScreen extends BaseScreen {
 				new PositionComponent(0, 1000),
 				new RotationComponent(0, 0)
 			);
+		ship.setProg(new JavaScriptShipProg(null, ship.getInterface()));
 		ShipGraphBuilder builder = new ShipGraphBuilder();
 		builder
 			.add( 1,  0, new Part(PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD))

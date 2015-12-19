@@ -3,6 +3,7 @@ package com.openthid.util;
 import java.util.Comparator;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
@@ -78,7 +79,15 @@ public class FunctionalUtils {
 		return cs;
 	}
 
-	public static <A, B> A applyMany(A a, B[] bs, BiConsumer<A, B> biConsumer) {
+	@SafeVarargs
+	public static <A> A applyMany(A a, Consumer<A>... consumers) {
+		for (int i = 0; i < consumers.length; i++) {
+			consumers[i].accept(a);
+		}
+		return a;
+	}
+
+	public static <A, B> A applyManyWith(A a, B[] bs, BiConsumer<A, B> biConsumer) {
 		for (int i = 0; i < bs.length; i++) {
 			biConsumer.accept(a, bs[i]);
 		}
