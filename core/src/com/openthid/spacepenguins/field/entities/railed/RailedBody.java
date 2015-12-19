@@ -30,4 +30,8 @@ public class RailedBody extends SpaceObject {
 	public String getName() {
 		return name;
 	}
+
+	public String getStatus() {
+		return "";//TODO Orbital Info or something
+	}
 }

@@ -10,13 +10,14 @@ public class JavaScriptShipProg extends ShipProg {
 
 	private static ScriptEngineManager manager = new ScriptEngineManager();
 
-	private String initCode = "var IOable = Java.type(\"com.openthid.spacepenguins.field.entities.ship.control.IOable\"); var mkio = IOable.fromFloat";
+	private String initCode =
+			  "var IOable = Java.type(\"com.openthid.spacepenguins.field.entities.ship.control.IOable\");"
+			+ "var mkio = IOable.fromFloat";
 	private String updateCode =
 			  "var t = io.getI(\"Clock\", \"time\").get();" 
 			+ "var tt = t.add(mkio(9)).mul(mkio(10)).sinDeg().mul(mkio(5));"
 			+ "var x = io.getO(\"Gyro\", \"torque\").set(tt);"
-			+ "print(tt.getValue());"
-			+ "print(x);";
+			+ "io.status(x + \"  \" + tt.getValue());";
 	private ScriptEngine scriptEngine;
 
 	public JavaScriptShipProg(String updateCode, ShipProgInterface shipProgInterface) {

@@ -12,10 +12,12 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.FloatArray;
+import com.openthid.spacepenguins.field.entities.FocusElement;
 import com.openthid.spacepenguins.field.entities.components.PositionComponent;
 import com.openthid.spacepenguins.field.entities.components.RenderedComponent;
 import com.openthid.spacepenguins.field.entities.components.SelfRenderedComponent;
 import com.openthid.spacepenguins.field.entities.components.TextureComponent;
+import com.openthid.util.FontService;
 
 public class RenderSystem extends EntitySystem {
 
@@ -79,6 +81,13 @@ public class RenderSystem extends EntitySystem {
 			Entity entity = selfRenderedEntities.get(i);
 			SelfRenderedComponent selfRenderedComponent = entity.getComponent(SelfRenderedComponent.class);
 			selfRenderedComponent.consumer.accept(this::drawCallback);
+		}
+		if (focusObject != null) {
+			String text = focusObject.getName();
+			if (!focusObject.getStatus().isEmpty()) {
+				text += ": " + focusObject.getStatus();
+			}
+			FontService.ubuntuMedium.getFont(40).draw(batch, text, screenX * 0, screenY - 10);
 		}
 		batch.end();
 	}
@@ -147,19 +156,5 @@ public class RenderSystem extends EntitySystem {
 
 	public float projectY(float y) {
 		return (y-worldPosY)*getZoom() + screenY/2;
-	}
-
-	public static interface FocusElement {
-		public PositionComponent getPositionComponent();
-
-		public default float getX() {
-			return getPositionComponent().x;
-		}
-
-		public default float getY() {
-			return getPositionComponent().y;
-		}
-		
-		public String getName();
 	}
 }

@@ -11,12 +11,12 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.kotcrab.vis.ui.widget.VisSlider;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.openthid.spacepenguins.GdxGame;
+import com.openthid.spacepenguins.field.entities.FocusElement;
 import com.openthid.spacepenguins.field.entities.components.MassComponent;
 import com.openthid.spacepenguins.field.entities.components.OrbitComponent;
 import com.openthid.spacepenguins.field.entities.components.PositionComponent;
@@ -29,18 +29,16 @@ import com.openthid.spacepenguins.field.entities.ship.Part.MaterialType;
 import com.openthid.spacepenguins.field.entities.ship.Part.PartRotation;
 import com.openthid.spacepenguins.field.entities.ship.Part.PartShape;
 import com.openthid.spacepenguins.field.entities.ship.Part.PartType;
-import com.openthid.spacepenguins.field.entities.ship.control.JavaScriptShipProg;
-import com.openthid.spacepenguins.field.entities.ship.control.ShipProg;
 import com.openthid.spacepenguins.field.entities.ship.RootPart;
 import com.openthid.spacepenguins.field.entities.ship.Ship;
 import com.openthid.spacepenguins.field.entities.ship.ShipGraphBuilder;
+import com.openthid.spacepenguins.field.entities.ship.control.JavaScriptShipProg;
 import com.openthid.spacepenguins.field.entities.ship.elements.Clock;
 import com.openthid.spacepenguins.field.entities.ship.elements.Gyro;
 import com.openthid.spacepenguins.field.entities.systems.ClockSystem;
 import com.openthid.spacepenguins.field.entities.systems.ControlIOSystem;
 import com.openthid.spacepenguins.field.entities.systems.OrbitSystem;
 import com.openthid.spacepenguins.field.entities.systems.RenderSystem;
-import com.openthid.spacepenguins.field.entities.systems.RenderSystem.FocusElement;
 import com.openthid.spacepenguins.field.entities.systems.RotationSystem;
 import com.openthid.spacepenguins.field.entities.systems.UserInputSystem;
 import com.openthid.spacepenguins.screens.BaseScreen;
@@ -64,12 +62,12 @@ public class FieldScreen extends BaseScreen {
 
 	private RailedBody mainPlanet;
 	private Ship[] ships;
-	private VisTextButton[] focusButtons;
 
 	private Stage stage;
 	private ScalingViewport viewport;
 	
 	private VisSlider zoomSlider;
+	private VisTextButton[] focusButtons;
 
 	public FieldScreen(GdxGame game) {
 		super(game);
@@ -169,10 +167,6 @@ public class FieldScreen extends BaseScreen {
 	public void addShip(Ship newShip) {
 		ships = Arrays.copyOf(ships, ships.length+1);
 		ships[ships.length-1] = newShip;
-		
-		Array<FocusElement> array = new Array<>();
-		array.add(mainPlanet);
-		array.addAll(ships);
 		
 		Entity newShipEntity = new Entity()
 				.add(new RenderedComponent())

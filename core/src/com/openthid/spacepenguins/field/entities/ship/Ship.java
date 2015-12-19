@@ -29,10 +29,7 @@ public class Ship extends SpaceObject {
 	private RotationComponent rotationComponent;
 
 	private String name;
-
-	public Part getRootPart() {
-		return rootPart;
-	}
+	private String status = "";
 
 	public Ship(Part rootPart, String name, OrbitComponent orbitComponent, PositionComponent positionComponent, RotationComponent rotationComponent) {
 		this.rootPart = rootPart;
@@ -90,12 +87,29 @@ public class Ship extends SpaceObject {
 		return rotationComponent;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
+	public String getStatus() {
+		return status;
+	}
+
 	public ShipProg getProg() {
 		return prog;
+	}
+
+	public Part getRootPart() {
+		return rootPart;
+	}
+
+	public ShipProgInterface getInterface() {
+		if (shipProgInterface == null) {
+			shipProgInterface = new ShipProgInterface();
+		}
+		return shipProgInterface;
 	}
 
 	public Ship setProg(ShipProg prog) {
@@ -107,13 +121,6 @@ public class Ship extends SpaceObject {
 		if (prog != null) {
 			prog.update(deltaTime);
 		}
-	}
-
-	public ShipProgInterface getInterface() {
-		if (shipProgInterface == null) {
-			shipProgInterface = new ShipProgInterface();
-		}
-		return shipProgInterface;
 	}
 
 	public class ShipProgInterface {
@@ -153,6 +160,10 @@ public class Ship extends SpaceObject {
 			} else {
 				return null;
 			}
+		}
+	
+		public void status(String str) {
+			status = str;
 		}
 	}
 }
