@@ -82,7 +82,10 @@ public class ShipGraphBuilder {
 					ship
 				);
 			if (elementMap.containsKey(pos)) {
-				part.setElement(getElementSupplier(pos).apply(part));
+				try {
+					part.setElement(getElementSupplier(pos).apply(part));
+				} catch (UnsupportedOperationException e) {
+				}
 				Entity elementEntity = new Entity();
 				Arrays.stream(part.getElement().getComponents()).forEach(component -> {
 					elementEntity.add(component);

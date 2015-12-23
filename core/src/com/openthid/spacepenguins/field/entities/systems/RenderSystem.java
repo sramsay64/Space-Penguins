@@ -9,6 +9,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.FloatArray;
@@ -18,6 +20,7 @@ import com.openthid.spacepenguins.field.entities.components.RenderedComponent;
 import com.openthid.spacepenguins.field.entities.components.SelfRenderedComponent;
 import com.openthid.spacepenguins.field.entities.components.TextureComponent;
 import com.openthid.util.FontService;
+import com.openthid.util.OrbitalCalc;
 
 public class RenderSystem extends EntitySystem {
 
@@ -36,7 +39,7 @@ public class RenderSystem extends EntitySystem {
 	private int screenX;
 	private int screenY;
 
-	private FocusElement focusObject = null;
+	private FocusElement focusElement = null;
 	private float focusX = 0;
 	private float focusY = 0;
 
@@ -59,9 +62,9 @@ public class RenderSystem extends EntitySystem {
 	 */
 	@Override
 	public void update(float deltaTime) {
-		if (focusObject != null) {
-			focusX = focusObject.getX();
-			focusY = focusObject.getY();
+		if (focusElement != null) {
+			focusX = focusElement.getX();
+			focusY = focusElement.getY();
 		}
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -82,14 +85,24 @@ public class RenderSystem extends EntitySystem {
 			SelfRenderedComponent selfRenderedComponent = entity.getComponent(SelfRenderedComponent.class);
 			selfRenderedComponent.consumer.accept(this::drawCallback);
 		}
-		if (focusObject != null) {
-			String text = focusObject.getName();
-			if (!focusObject.getStatus().isEmpty()) {
-				text += ": " + focusObject.getStatus();
+		if (focusElement != null) {
+			String text = focusElement.getName();
+			if (!focusElement.getStatus().isEmpty()) {
+				text += ": " + focusElement.getStatus();
 			}
-			FontService.ubuntuMedium.getFont(40).draw(batch, text, screenX * 0, screenY - 10);
+			FontService.ubuntuMedium.getFont(40).draw(batch, text, 5 + screenX * 0, screenY - 5);
+			batch.end();
+			
+//			OrbitalCalc orbit = focusElement.getOrbitCalc();
+//			ShapeRenderer shapeRenderer = new ShapeRenderer();//TODO Cache shapeRenderer
+//			shapeRenderer.begin(ShapeType.Line);
+//			shapeRenderer.setColor(1, 1, 0, 1);
+//			shapeRenderer.rotate(0, 0, 0, (float) orbit.getAugment());
+//			shapeRenderer.ellipse(screenX/2, screenY/2, orbit.getA()*getZoom(), (float) orbit.getB()*getZoom());
+//			shapeRenderer.end();
+		} else {
+			batch.end();
 		}
-		batch.end();
 	}
 
 	/**
@@ -128,11 +141,11 @@ public class RenderSystem extends EntitySystem {
 	}
 
 	public FocusElement getLockObject() {
-		return focusObject;
+		return focusElement;
 	}
 
 	public void setLockObject(FocusElement lockObject) {
-		this.focusObject = lockObject;
+		this.focusElement = lockObject;
 		if (lockObject == null) {
 			focusX = 0;
 			focusY = 0;

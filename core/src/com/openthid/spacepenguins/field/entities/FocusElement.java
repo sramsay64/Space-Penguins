@@ -1,6 +1,7 @@
 package com.openthid.spacepenguins.field.entities;
 
 import com.openthid.spacepenguins.field.entities.components.PositionComponent;
+import com.openthid.util.OrbitalCalc;
 
 public interface FocusElement {
 	public PositionComponent getPositionComponent();
@@ -16,4 +17,6 @@ public interface FocusElement {
 	public String getName();
 
 	public String getStatus();
+
+	public OrbitalCalc getOrbitCalc();
 }

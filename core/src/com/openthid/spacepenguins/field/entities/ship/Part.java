@@ -77,16 +77,8 @@ public class Part {
 		return element;
 	}
 
-	public PartType getPartType() {
-		return partType;
-	}
-
 	public PartShape getPartShape() {
 		return partShape;
-	}
-
-	public MaterialType getMaterialType() {
-		return materialType;
 	}
 
 	public float getRotation() {

@@ -31,16 +31,18 @@ import com.openthid.spacepenguins.field.entities.ship.Part.PartShape;
 import com.openthid.spacepenguins.field.entities.ship.Part.PartType;
 import com.openthid.spacepenguins.field.entities.ship.RootPart;
 import com.openthid.spacepenguins.field.entities.ship.Ship;
+import com.openthid.spacepenguins.field.entities.ship.ShipEngine;
+import com.openthid.spacepenguins.field.entities.ship.ShipEngine.EngineType;
 import com.openthid.spacepenguins.field.entities.ship.ShipGraphBuilder;
 import com.openthid.spacepenguins.field.entities.ship.control.JavaScriptShipProg;
 import com.openthid.spacepenguins.field.entities.ship.elements.Clock;
 import com.openthid.spacepenguins.field.entities.ship.elements.Gyro;
+import com.openthid.spacepenguins.field.entities.ship.elements.KeyPanel;
 import com.openthid.spacepenguins.field.entities.systems.ClockSystem;
 import com.openthid.spacepenguins.field.entities.systems.ControlIOSystem;
 import com.openthid.spacepenguins.field.entities.systems.OrbitSystem;
 import com.openthid.spacepenguins.field.entities.systems.RenderSystem;
 import com.openthid.spacepenguins.field.entities.systems.RotationSystem;
-import com.openthid.spacepenguins.field.entities.systems.UserInputSystem;
 import com.openthid.spacepenguins.screens.BaseScreen;
 import com.openthid.util.FunctionalUtils;
 
@@ -58,7 +60,6 @@ public class FieldScreen extends BaseScreen {
 	private RotationSystem rotationSystem;
 	private ControlIOSystem controlIOSystem;
 	private ClockSystem clockSystem;
-	private UserInputSystem userInputSystem;
 
 	private RailedBody mainPlanet;
 	private Ship[] ships;
@@ -91,9 +92,6 @@ public class FieldScreen extends BaseScreen {
 		clockSystem = new ClockSystem();
 		engine.addSystem(clockSystem);
 		
-		userInputSystem = new UserInputSystem();
-		engine.addSystem(userInputSystem);
-		
 		viewport = new ScalingViewport(Scaling.stretch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new OrthographicCamera());
 		stage = new Stage(viewport, getBatch());
 		
@@ -118,7 +116,7 @@ public class FieldScreen extends BaseScreen {
 		
 		Ship ship = new Ship(new RootPart(),
 				"Test Ship",
-				new OrbitComponent(7.2f, 0, 1),
+				new OrbitComponent(5.2f, 0, 1000),
 				new PositionComponent(0, 1000),
 				new RotationComponent(0, 0)
 			);
@@ -127,10 +125,14 @@ public class FieldScreen extends BaseScreen {
 		builder
 			.add( 1,  0, new Part(PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD))
 			.add(-1,  0, new Part(PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD, PartRotation.QUARTER))
+			.add(-1, -1, new Part(PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD))
+			.add(-1, -1, part -> new Gyro(part, 500))
 			.add( 0, -1, new Part(PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD))
-			.add( 0, -1, part -> new Gyro(part, 5))
-			.add( 0,  1, new Part(PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD))
-			.add( 0,  1, part -> new Clock(part))
+			.add( 0, -1, part -> new Clock(part))
+			.add( 1, -1, new Part(PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD))
+			.add( 1, -1, part -> new KeyPanel(part, i -> isKeyDown(i) && renderSystem.getLockObject() == ship))
+			.add( 0, -2, new ShipEngine(ship, EngineType.MINI, PartRotation.NONE))
+			.add( 0, -2, x -> null)
 			.setupOn(ship, engine::addEntity);
 		addShip(ship);
 	}

@@ -3,6 +3,7 @@ package com.openthid.spacepenguins.field.entities.railed;
 import com.openthid.spacepenguins.field.entities.SpaceObject;
 import com.openthid.spacepenguins.field.entities.components.MassComponent;
 import com.openthid.spacepenguins.field.entities.components.PositionComponent;
+import com.openthid.util.OrbitalCalc;
 
 public class RailedBody extends SpaceObject {
 
@@ -33,5 +34,10 @@ public class RailedBody extends SpaceObject {
 
 	public String getStatus() {
 		return "";//TODO Orbital Info or something
+	}
+
+	@Override
+	public OrbitalCalc getOrbitCalc() {
+		return null;
 	}
 }

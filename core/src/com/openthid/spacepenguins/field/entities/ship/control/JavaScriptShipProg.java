@@ -12,12 +12,19 @@ public class JavaScriptShipProg extends ShipProg {
 
 	private String initCode =
 			  "var IOable = Java.type(\"com.openthid.spacepenguins.field.entities.ship.control.IOable\");"
-			+ "var mkio = IOable.fromFloat";
+			+ "var mkio = IOable.fromFloat;"
+			+ "var zero = IOable.ZERO;";
 	private String updateCode =
-			  "var t = io.getI(\"Clock\", \"time\").get();" 
-			+ "var tt = t.add(mkio(9)).mul(mkio(10)).sinDeg().mul(mkio(5));"
-			+ "var x = io.getO(\"Gyro\", \"torque\").set(tt);"
-			+ "io.status(x + \"  \" + tt.getValue());";
+			  "var t = io.getI(\"Clock\", \"time\").get();"
+			+ "var kQ = io.getI(\"KeyPanel\", \"q\").get();"
+			+ "var kE = io.getI(\"KeyPanel\", \"e\").get();"
+			+ "var kW = io.getI(\"KeyPanel\", \"w\").get();"
+			+ "var kS = io.getI(\"KeyPanel\", \"s\").get();"
+			+ "var gyro = mkio(70).mul(kQ).add(mkio(-70).mul(kE));"
+			+ "var thrust = mkio(10).mul(kW).add(mkio(-10).mul(kS));"
+			+ "var oGyro = io.getO(\"Gyro\", \"torque\").set(gyro);"
+			+ "var oThrust = io.getO(\"Engine\", \"thrust\").set(thrust);"
+			+ "io.status(gyro.getValue() + \" : \" + oGyro + \" | \" + thrust.getValue() + \" : \" + oThrust);";
 	private ScriptEngine scriptEngine;
 
 	public JavaScriptShipProg(String updateCode, ShipProgInterface shipProgInterface) {
