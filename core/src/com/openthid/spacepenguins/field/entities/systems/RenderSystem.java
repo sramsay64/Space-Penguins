@@ -9,8 +9,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.FloatArray;
@@ -20,7 +18,6 @@ import com.openthid.spacepenguins.field.entities.components.RenderedComponent;
 import com.openthid.spacepenguins.field.entities.components.SelfRenderedComponent;
 import com.openthid.spacepenguins.field.entities.components.TextureComponent;
 import com.openthid.util.FontService;
-import com.openthid.util.OrbitalCalc;
 
 public class RenderSystem extends EntitySystem {
 

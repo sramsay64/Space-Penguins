@@ -2,7 +2,6 @@ package com.openthid.spacepenguins.field.entities.ship;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
 import com.openthid.spacepenguins.field.entities.SpaceObject;
@@ -16,7 +15,6 @@ import com.openthid.spacepenguins.field.entities.components.ShipComponent;
 import com.openthid.spacepenguins.field.entities.ship.control.ControlInput;
 import com.openthid.spacepenguins.field.entities.ship.control.ControlOutput;
 import com.openthid.spacepenguins.field.entities.ship.control.ShipProg;
-import com.openthid.util.OrbitalCalc;
 import com.openthid.util.TriConsumer;
 
 public class Ship extends SpaceObject {
@@ -167,12 +165,5 @@ public class Ship extends SpaceObject {
 		public void status(String str) {
 			status = str;
 		}
-	}
-
-	@Override
-	public OrbitalCalc getOrbitCalc() {
-		Vector3 r = new Vector3(positionComponent.x, positionComponent.y, 0);
-		
-		return new OrbitalCalc(r, new Vector3(orbitComponent.getVelX(), orbitComponent.getVelY(), 0), 7.6E8f*6.6742E-5f);
 	}
 }
