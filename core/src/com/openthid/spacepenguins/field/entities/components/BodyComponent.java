@@ -4,8 +4,8 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -22,10 +22,16 @@ public class BodyComponent implements Component {
 		return body;
 	}
 
-	public static BodyComponent gen(World world, float x, float y) {
+	/**
+	 * @param world {@link Box2D} {@link World} to create the Body within
+	 * @param xPos The x position of the body in the {@link World}
+	 * @param yPos The y position of the body in the {@link World}
+	 * @return A new {@link BodyComponent} with a new {@link Body} 
+	 */
+	public static BodyComponent gen(World world, float xPos, float yPos) {
 		BodyDef def = new BodyDef();
 		def.type = BodyType.DynamicBody;
-		def.position.set(x, y);
+		def.position.set(xPos, yPos);
 		
 		Body body = world.createBody(def);
 		
@@ -37,13 +43,18 @@ public class BodyComponent implements Component {
 		fDef.density = 0.5f;
 		fDef.friction = 0.4f;
 		fDef.restitution = 0.6f;
-		
-		Fixture fixture = body.createFixture(fDef);
+		body.createFixture(fDef);
 		
 		shape.dispose();
 		return new BodyComponent(body);
 	}
 
+	/**
+	 * @param world {@link Box2D} {@link World} to create the Body within
+	 * @param xPos The x position of the body in the {@link World}
+	 * @param yPos The y position of the body in the {@link World}
+	 * @return A new {@link BodyComponent} with a new {@link Body} 
+	 */
 	public static BodyComponent genStatic(World world, float x, float y) {
 		BodyDef def = new BodyDef();
 		def.type = BodyType.StaticBody;
@@ -54,13 +65,7 @@ public class BodyComponent implements Component {
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(1000, 10);
 		
-		FixtureDef fDef = new FixtureDef();
-		fDef.shape = shape;
-		fDef.density = 0.5f;
-		fDef.friction = 0.4f;
-		fDef.restitution = 0.6f;
-		
-		Fixture fixture = body.createFixture(shape, 1);
+		body.createFixture(shape, 1);
 		
 		shape.dispose();
 		return new BodyComponent(body);
