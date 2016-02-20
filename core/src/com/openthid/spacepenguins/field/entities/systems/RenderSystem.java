@@ -6,14 +6,16 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.FloatArray;
 import com.openthid.spacepenguins.field.entities.FocusElement;
-import com.openthid.spacepenguins.field.entities.components.PositionComponent;
+import com.openthid.spacepenguins.field.entities.components.BodyComponent;
 import com.openthid.spacepenguins.field.entities.components.RenderedComponent;
 import com.openthid.spacepenguins.field.entities.components.SelfRenderedComponent;
 import com.openthid.spacepenguins.field.entities.components.TextureComponent;
@@ -50,7 +52,7 @@ public class RenderSystem extends EntitySystem {
 
 	@Override
 	public void addedToEngine(Engine engine) {
-		renderedEntities = engine.getEntitiesFor(Family.all(RenderedComponent.class, PositionComponent.class, TextureComponent.class).get());
+		renderedEntities = engine.getEntitiesFor(Family.all(RenderedComponent.class, BodyComponent.class, TextureComponent.class).get());
 		selfRenderedEntities = engine.getEntitiesFor(Family.all(SelfRenderedComponent.class).get());
 	}
 
@@ -68,11 +70,11 @@ public class RenderSystem extends EntitySystem {
 		batch.begin();
 		for (int i = 0; i < renderedEntities.size(); i++) {
 			Entity entity = renderedEntities.get(i);
-			PositionComponent pos = entity.getComponent(PositionComponent.class);
+			BodyComponent body = entity.getComponent(BodyComponent.class);
 			Texture texture = entity.getComponent(TextureComponent.class).texture;
 			batch.draw(texture,
-					projectX(pos.x - focusX) - texture.getWidth()*getZoom()/2,
-					projectY(pos.y - focusY) - texture.getHeight()*getZoom()/2,
+					projectX(body.getBody().getPosition().x - focusX) - texture.getWidth()*getZoom()/2,
+					projectY(body.getBody().getPosition().y - focusY) - texture.getHeight()*getZoom()/2,
 					texture.getWidth()*getZoom(),
 					texture.getHeight()*getZoom()
 				);
@@ -166,5 +168,13 @@ public class RenderSystem extends EntitySystem {
 
 	public float projectY(float y) {
 		return (y-worldPosY)*getZoom() + screenY/2;
+	}
+
+	public Camera getCamera() {//LATER Move to somewhere appropriate
+		OrthographicCamera cam = new OrthographicCamera(screenX/getZoom(), screenY/getZoom());
+		cam.position.x = worldPosX + focusX;
+		cam.position.y = worldPosY + focusY;
+		cam.update();
+		return cam;
 	}
 }

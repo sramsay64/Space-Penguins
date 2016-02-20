@@ -1,17 +1,10 @@
 package com.openthid.spacepenguins.field.entities;
 
-import com.openthid.spacepenguins.field.entities.components.PositionComponent;
-
 public interface FocusElement {
-	public PositionComponent getPositionComponent();
 
-	public default float getX() {
-		return getPositionComponent().x;
-	}
+	public float getX();
 
-	public default float getY() {
-		return getPositionComponent().y;
-	}
+	public float getY();
 	
 	public String getName();
 

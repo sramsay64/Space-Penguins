@@ -1,7 +1,7 @@
 package com.openthid.spacepenguins.field.entities;
 
-import com.openthid.spacepenguins.field.entities.components.OrbitComponent;
+import com.openthid.spacepenguins.field.entities.components.MovementComponent;
 
 public abstract class OrbitingSpaceObject extends SpaceObject {
-	public abstract OrbitComponent getOrbit();
+	public abstract MovementComponent getOrbit();
 }

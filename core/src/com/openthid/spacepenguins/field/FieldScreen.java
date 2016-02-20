@@ -17,13 +17,11 @@ import com.kotcrab.vis.ui.widget.VisSlider;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.openthid.spacepenguins.GdxGame;
 import com.openthid.spacepenguins.field.entities.FocusElement;
+import com.openthid.spacepenguins.field.entities.components.BodyComponent;
 import com.openthid.spacepenguins.field.entities.components.MassComponent;
-import com.openthid.spacepenguins.field.entities.components.OrbitComponent;
-import com.openthid.spacepenguins.field.entities.components.PositionComponent;
 import com.openthid.spacepenguins.field.entities.components.RenderedComponent;
-import com.openthid.spacepenguins.field.entities.components.RotationComponent;
 import com.openthid.spacepenguins.field.entities.components.TextureComponent;
-import com.openthid.spacepenguins.field.entities.railed.RailedBody;
+import com.openthid.spacepenguins.field.entities.railed.StaticObject;
 import com.openthid.spacepenguins.field.entities.ship.Part;
 import com.openthid.spacepenguins.field.entities.ship.Part.MaterialType;
 import com.openthid.spacepenguins.field.entities.ship.Part.PartRotation;
@@ -40,7 +38,7 @@ import com.openthid.spacepenguins.field.entities.ship.elements.Gyro;
 import com.openthid.spacepenguins.field.entities.ship.elements.KeyPanel;
 import com.openthid.spacepenguins.field.entities.systems.ClockSystem;
 import com.openthid.spacepenguins.field.entities.systems.ControlIOSystem;
-import com.openthid.spacepenguins.field.entities.systems.OrbitSystem;
+import com.openthid.spacepenguins.field.entities.systems.MovementSystem;
 import com.openthid.spacepenguins.field.entities.systems.RenderSystem;
 import com.openthid.spacepenguins.field.entities.systems.RotationSystem;
 import com.openthid.spacepenguins.screens.BaseScreen;
@@ -56,12 +54,12 @@ public class FieldScreen extends BaseScreen {
 	private Engine engine;
 
 	private RenderSystem renderSystem;
-	private OrbitSystem orbitSystem;
+	private MovementSystem movementSystem;
 	private RotationSystem rotationSystem;
 	private ControlIOSystem controlIOSystem;
 	private ClockSystem clockSystem;
 
-	private RailedBody mainPlanet;
+	private StaticObject mainPlanet;
 	private Ship[] ships;
 
 	private Stage stage;
@@ -76,12 +74,13 @@ public class FieldScreen extends BaseScreen {
 		ships = new Ship[0];
 		focusButtons = new VisTextButton[0];
 		engine = new Engine();
+		viewport = new ScalingViewport(Scaling.stretch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new OrthographicCamera());
 		
 		renderSystem = new RenderSystem(getBatch(), getWidth(), getHeight());
 		engine.addSystem(renderSystem);
 		
-		orbitSystem = new OrbitSystem();
-		engine.addSystem(orbitSystem);
+		movementSystem = new MovementSystem(renderSystem::getCamera);
+		engine.addSystem(movementSystem);
 		
 		rotationSystem = new RotationSystem();
 		engine.addSystem(rotationSystem);
@@ -92,7 +91,6 @@ public class FieldScreen extends BaseScreen {
 		clockSystem = new ClockSystem();
 		engine.addSystem(clockSystem);
 		
-		viewport = new ScalingViewport(Scaling.stretch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new OrthographicCamera());
 		stage = new Stage(viewport, getBatch());
 		
 		zoomSlider = new VisSlider(0, 100, 0.1f, true);
@@ -105,20 +103,16 @@ public class FieldScreen extends BaseScreen {
 			return true;
 		});
 		
-		mainPlanet = new RailedBody(new PositionComponent(0, 0), new MassComponent(7.6E8f), "Olmus");
+		mainPlanet = new StaticObject(new MassComponent(7.6E8f), BodyComponent.genStatic(movementSystem.getWorld(), 0, -500), "Olmus");
 		Entity planetEntity = new Entity()
 				.add(new RenderedComponent())
-				.add(mainPlanet.getPositionComponent())
-				.add(mainPlanet.getMassComponent())
 				.add(new TextureComponent(new Texture("Colorful_planets_1/spr_planet01.png")));
 		engine.addEntity(planetEntity);
 		addFocusElement(mainPlanet);
 		
 		Ship ship = new Ship(new RootPart(),
 				"Test Ship",
-				new OrbitComponent(5.2f, 0, 1000),
-				new PositionComponent(0, 1000),
-				new RotationComponent(0, 0)
+				BodyComponent.gen(movementSystem.getWorld(), 0, 1000)
 			);
 		ship.setProg(new JavaScriptShipProg(null, ship.getInterface()));
 		ShipGraphBuilder builder = new ShipGraphBuilder();
@@ -172,12 +166,9 @@ public class FieldScreen extends BaseScreen {
 		
 		Entity newShipEntity = new Entity()
 				.add(new RenderedComponent())
-				.add(newShip.getPositionComponent())
-				.add(newShip.getRotationComponent())
 				.add(newShip.getShipComponent())
 				.add(newShip.getShipComponent().selfRenderedComponent)
-				.add(newShip.getOrbitComponent())
-				.add(newShip.getMassComponent());
+				.add(newShip.getBodyComponent());
 		engine.addEntity(newShipEntity);
 		
 		addFocusElement(newShip);

@@ -6,19 +6,19 @@ import com.badlogic.ashley.core.Component;
 
 public class TorqueComponent implements Component {
 
-	private RotationComponent rotationComponent;
+	private BodyComponent bodyComponent;
 	private Supplier<Float> torqueSupplier;
 
-	public TorqueComponent(RotationComponent rotationComponent, Supplier<Float> torqueSupplier) {
-		this.rotationComponent = rotationComponent;
+	public TorqueComponent(BodyComponent bodyComponent, Supplier<Float> torqueSupplier) {
+		this.bodyComponent = bodyComponent;
 		this.torqueSupplier = torqueSupplier;
-	}
-
-	public RotationComponent getRotationComponent() {
-		return rotationComponent;
 	}
 
 	public float getTorque() {
 		return torqueSupplier.get();
+	}
+
+	public BodyComponent getBodyComponent() {
+		return bodyComponent;
 	}
 }

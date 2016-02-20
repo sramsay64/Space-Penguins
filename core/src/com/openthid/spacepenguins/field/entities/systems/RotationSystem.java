@@ -23,7 +23,7 @@ public class RotationSystem extends EntitySystem {
 	public void update(float deltaTime) {
 		torquingEntities.forEach(entity -> {
 			TorqueComponent torqueComponent = entity.getComponent(TorqueComponent.class);
-			torqueComponent.getRotationComponent().spin += torqueComponent.getTorque()*deltaTime;
+			torqueComponent.getBodyComponent().getBody().applyAngularImpulse(torqueComponent.getTorque(), true);
 		});
 		rotatingEntities.forEach(entity -> {
 			RotationComponent component = entity.getComponent(RotationComponent.class);

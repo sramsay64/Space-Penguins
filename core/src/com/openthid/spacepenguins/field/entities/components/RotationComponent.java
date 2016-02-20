@@ -2,6 +2,7 @@ package com.openthid.spacepenguins.field.entities.components;
 
 import com.badlogic.ashley.core.Component;
 
+@Deprecated
 public class RotationComponent implements Component {
 
 	/**

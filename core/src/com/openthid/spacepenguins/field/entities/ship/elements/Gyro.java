@@ -24,11 +24,7 @@ public class Gyro extends Element {
 				.build(part.getShip(), "Gyro").apply()
 				.apply(this::setTorque).apply("torque")
 				.apply().apply();
-		torqueComponent = new TorqueComponent(
-				part
-				.getShip()
-				.getRotationComponent(),
-				this::getTorque);
+		torqueComponent = new TorqueComponent(part.getShip().getBodyComponent(), this::getTorque);
 	}
 
 	private boolean setTorque(IOable torque) {
