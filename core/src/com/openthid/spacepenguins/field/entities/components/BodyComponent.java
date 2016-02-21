@@ -5,7 +5,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2D;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -35,8 +34,8 @@ public class BodyComponent implements Component {
 		
 		Body body = world.createBody(def);
 		
-		CircleShape shape = new CircleShape();
-		shape.setRadius(10);
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(32, 32);
 		
 		FixtureDef fDef = new FixtureDef();
 		fDef.shape = shape;

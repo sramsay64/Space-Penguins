@@ -42,7 +42,7 @@ public class Ship extends SpaceObject {
 					part.getTexture().getWidth(),
 					part.getTexture().getHeight(),
 					part.getRotation(),
-					bodyComponent.getBody().getAngle()*90/MathUtils.PI
+					bodyComponent.getBody().getAngle()*MathUtils.radiansToDegrees
 				);
 			triConsumer.accept(part.getTexture(), floatArray, toCenter);
 			if (part.getElement() != null) {
