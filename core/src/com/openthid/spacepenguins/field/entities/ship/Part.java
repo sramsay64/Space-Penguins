@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.openthid.spacepenguins.field.entities.ship.elements.Element;
+import com.openthid.spacepenguins.field.entities.systems.MovementSystem;
 import com.openthid.util.TriConsumer;
 
 public class Part {
@@ -26,11 +27,11 @@ public class Part {
 	private Ship ship;
 	private Element element = null;
 
-	public Part(PartType partType, PartShape partShape, MaterialType materialType) {
-		this(partType, partShape, materialType, PartRotation.NONE);
+	public Part(MovementSystem movementSystem, PartType partType, PartShape partShape, MaterialType materialType) {
+		this(movementSystem, partType, partShape, materialType, PartRotation.NONE);
 	}
 
-	public Part(PartType partType, PartShape partShape, MaterialType materialType, PartRotation partRotation) {
+	public Part(MovementSystem movementSystem, PartType partType, PartShape partShape, MaterialType materialType, PartRotation partRotation) {
 		this.partType = partType;
 		this.partShape = partShape;
 		this.materialType = materialType;
@@ -85,10 +86,23 @@ public class Part {
 		return partRotation.getRotationDegrees();
 	}
 
+	public PartRotation getPartRotation() {
+		return partRotation;
+	}
+
 	public void setElement(Element element) {
 		this.element = element;
 	}
 
+	/**
+	 * A method called after the constructor but before this objects use to finish building
+	 * the graph of other parts attached parts.
+	 * @param norths
+	 * @param souths
+	 * @param easts
+	 * @param wests
+	 * @param ship
+	 */
 	public void setup(Part[] norths, Part[] souths, Part[] easts, Part[] wests, Ship ship) {
 		if (norths != null) {this.norths = norths;}
 		if (souths != null) {this.souths = souths;}
@@ -244,6 +258,9 @@ public class Part {
 		}
 	}
 
+	/**
+	 * Turing measured anti-clockwise
+	 */
 	public static enum PartRotation {
 		NONE(0),
 		QUARTER(90),

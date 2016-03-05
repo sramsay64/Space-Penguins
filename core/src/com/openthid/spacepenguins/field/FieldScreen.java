@@ -110,22 +110,22 @@ public class FieldScreen extends BaseScreen {
 		engine.addEntity(planetEntity);
 		addFocusElement(mainPlanet);
 		
-		Ship ship = new Ship(new RootPart(),
+		Ship ship = new Ship(new RootPart(movementSystem),
 				"Test Ship",
 				BodyComponent.gen(movementSystem.getWorld(), 0, 1000)
 			);
 		ship.setProg(new JavaScriptShipProg(null, ship.getInterface()));
 		ShipGraphBuilder builder = new ShipGraphBuilder();
 		builder
-			.add( 1,  0, new Part(PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD))
-			.add(-1,  0, new Part(PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD, PartRotation.QUARTER))
-			.add(-1, -1, new Part(PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD))
+			.add( 1,  0, new Part(movementSystem, PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD))
+			.add(-1,  0, new Part(movementSystem, PartType.SOLID, PartShape.TRIANGLE, MaterialType.WOOD, PartRotation.QUARTER))
+			.add(-1, -1, new Part(movementSystem, PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD))
 			.add(-1, -1, part -> new Gyro(part, 500))
-			.add( 0, -1, new Part(PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD))
+			.add( 0, -1, new Part(movementSystem, PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD))
 			.add( 0, -1, part -> new Clock(part))
-			.add( 1, -1, new Part(PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD))
+			.add( 1, -1, new Part(movementSystem, PartType.HOLLOW, PartShape.SQUARE1x1, MaterialType.WOOD))
 			.add( 1, -1, part -> new KeyPanel(part, i -> isKeyDown(i) && renderSystem.getLockObject() == ship))
-			.add( 0, -2, new ShipEngine(ship, EngineType.MINI, PartRotation.NONE))
+			.add( 0, -2, new ShipEngine(movementSystem, ship, EngineType.MINI, PartRotation.NONE))
 			.add( 0, -2, x -> null)
 			.setupOn(ship, engine::addEntity);
 		addShip(ship);
